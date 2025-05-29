@@ -1,0 +1,12 @@
+tbody, td, tfoot, th, thead, tr{
+    font-size: 14 !important;
+}
+
+.test_form .form-check {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #efefef;
+    display: flex
+;
+    align-items: center;
+    padding: 5px 0;
+}
