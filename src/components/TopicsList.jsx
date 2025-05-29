@@ -4,42 +4,71 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllTopics, deleteTopic, updateTopic } from '../redux/slices/topicSlice';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Modal, Button } from 'react-bootstrap';
+import {
+  getAllSubjects,
+} from '../redux/slices/subjectSlice';
 
 const TopicsList = () => {
   const dispatch = useDispatch();
+
+  // Getting topics & subjects from Redux store
   const { topics, loading, error } = useSelector((state) => state.topics);
+  const { subjects } = useSelector((state) => state.subject);  // assuming you have this slice
 
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [updatedTitle, setUpdatedTitle] = useState('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
-  // Fetch Topics
+  // Fetch Topics on mount
   useEffect(() => {
     dispatch(getAllTopics());
   }, [dispatch]);
 
-  // Open Edit Modal
+  // Open Edit Modal and prefill title and subject
   const handleEdit = (topic) => {
     setSelectedTopic(topic);
-    setUpdatedTitle(topic.title);
-    // Show Bootstrap modal manually
-    const modal = new window.bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
+    setUpdatedTitle(topic.title || topic.name || '');
+
+    // Preselect the subject id if available
+    setSelectedSubjectId(topic.subject?._id || '');
+
+    setShowModal(true);
   };
 
-  // Submit Update
+  // Close modal and clear states
+  const handleClose = () => {
+    setShowModal(false);
+    setSelectedTopic(null);
+    setUpdatedTitle('');
+    setSelectedSubjectId('');
+  };
+
+  // Submit update with title and subject id
   const handleUpdate = () => {
     if (!updatedTitle.trim()) {
       alert('Title cannot be empty!');
       return;
     }
-    dispatch(updateTopic({ id: selectedTopic._id, updatedData: { title: updatedTitle } }));
-    // Hide modal
-    const modalEl = document.getElementById('editModal');
-    const modal = window.bootstrap.Modal.getInstance(modalEl);
-    modal.hide();
+
+    if (!selectedSubjectId) {
+      alert('Please select a subject!');
+      return;
+    }
+
+    dispatch(updateTopic({
+      id: selectedTopic._id,
+      updatedData: {
+        title: updatedTitle,
+        subject: selectedSubjectId  // assuming your backend accepts subject id here 
+      }
+    }));
+
+    handleClose();
   };
 
-  // Handle Delete
+  // Delete topic
   const handleDelete = (id) => {
     const confirmed = window.confirm('Are you sure you want to delete this topic?');
     if (confirmed) {
@@ -54,17 +83,13 @@ const TopicsList = () => {
     }
   };
 
-
-
   return (
     <div className="card basic-data-table">
-      <div className="card-header d-flex  align-items-center justify-content-between">
+      <div className="card-header d-flex align-items-center justify-content-between">
         <h5 className="card-title mb-0">All Topics</h5>
-
-        <Link to="/create-topic" className='btn btn-primary'>
+        <Link to="/create-topic" className="btn btn-primary">
           Create Topic
         </Link>
-
       </div>
       <div className="card-body">
         {loading && <p>Loading...</p>}
@@ -110,47 +135,48 @@ const TopicsList = () => {
         )}
       </div>
 
-      {/* Edit Modal */}
-      <div
-        className="modal fade"
-        id="editModal"
-        tabIndex="-1"
-        aria-labelledby="editModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="editModalLabel">
-                Edit Topic
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <input
-                type="text"
-                className="form-control"
-                value={updatedTitle}
-                onChange={(e) => setUpdatedTitle(e.target.value)}
-                autoFocus
-              />
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
-                Close
-              </button>
-              <button className="btn btn-primary" onClick={handleUpdate}>
-                Save Changes
-              </button>
-            </div>
+      {/* React Bootstrap Modal */}
+      <Modal show={showModal} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Topic</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mb-3">
+            <label className="form-label">Title</label>
+            <input
+              type="text"
+              className="form-control"
+              value={updatedTitle}
+              onChange={(e) => setUpdatedTitle(e.target.value)}
+              autoFocus
+            />
           </div>
-        </div>
-      </div>
+
+          <div>
+            <label className="form-label">Subject</label>
+            <select
+              className="form-select"
+              value={selectedSubjectId}
+              onChange={(e) => setSelectedSubjectId(e.target.value)}
+            >
+              <option value="">Select Subject</option>
+              {subjects && subjects.map((subj) => (
+                <option key={subj._id} value={subj._id}>
+                  {subj.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleUpdate}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
