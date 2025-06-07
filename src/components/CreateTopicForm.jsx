@@ -3,11 +3,13 @@ import { Card, Form, Button, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import api from '../utils/axios';
-import { getAllSubjects } from '../redux/slices/subjectSlice';
+import { getAllSubjects, getSubjectsByInstituteId } from '../redux/slices/subjectSlice';
 
 const CreateTopicForm = () => {
     const dispatch = useDispatch();
+
     const { subjects, loading } = useSelector((state) => state.subject);
+    const { user } = useSelector((state) => state.auth.user);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -17,7 +19,9 @@ const CreateTopicForm = () => {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        dispatch(getAllSubjects());
+        if (user?.instituteId) {
+            dispatch(getSubjectsByInstituteId(user?.instituteId));
+        }
     }, [dispatch]);
 
     const handleChange = (e) => {
@@ -36,7 +40,13 @@ const CreateTopicForm = () => {
 
         try {
             setSubmitting(true);
-            const res = await api.post('/create-topic', formData);
+
+            const topicData = {
+                ...formData,
+                instituteId: user?.instituteId // 👈 add instituteId to payload
+            };
+
+            const res = await api.post('/create-topic', topicData);
             toast.success(res.data.message);
             setFormData({ name: '', subject: '' });
         } catch (error) {

@@ -1,178 +1,159 @@
-import { Icon } from '@iconify/react/dist/iconify.js';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllInstitutes } from '../redux/slices/instituteSlice';
+import { createUser } from '../redux/slices/userSlice';
 
 const AddUserLayer = () => {
 
-    const [imagePreviewUrl, setImagePreviewUrl] = useState('');
+    const dispatch = useDispatch();
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreviewUrl(reader.result);
-            };
-            reader.readAsDataURL(file);
+    const { institutes } = useSelector((state) => state.institute);
+    const { loading } = useSelector((state) => state.user);
+
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        role: 'super-admin',
+        instituteId: '',
+    });
+
+    useEffect(() => {
+        dispatch(getAllInstitutes());
+    }, [dispatch]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name === 'role') {
+            setFormData((prev) => ({
+                ...prev,
+                role: value,
+                instituteId: value === 'admin' || value === 'teacher' ? prev.instituteId : '',
+            }));
+        } else {
+            setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
-    return (
-        <div className="card h-100 p-0 radius-12">
-            <div className="card-body p-24">
-                <div className="row justify-content-center">
-                    <div className="col-xxl-6 col-xl-8 col-lg-10">
-                        <div className="card border">
-                            <div className="card-body">
-                                <h6 className="text-md text-primary-light mb-16">Profile Image</h6>
-                                {/* Upload Image Start */}
-                                <div className="mb-24 mt-16">
-                                    <div className="avatar-upload">
-                                        <div className="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
-                                            <input
-                                                type="file"
-                                                id="imageUpload"
-                                                accept=".png, .jpg, .jpeg"
-                                                hidden
-                                                onChange={handleImageChange}
-                                            />
-                                            <label
-                                                htmlFor="imageUpload"
-                                                className="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
-                                                <Icon icon="solar:camera-outline" className="icon"></Icon>
-                                            </label>
-                                        </div>
-                                        <div className="avatar-preview">
-                                            <div
-                                                id="imagePreview"
-                                                style={{
-                                                    backgroundImage: imagePreviewUrl ? `url(${imagePreviewUrl})` : '',
 
-                                                }}
-                                            >
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* Upload Image End */}
-                                <form action="#">
-                                    <div className="mb-20">
-                                        <label
-                                            htmlFor="name"
-                                            className="form-label fw-semibold text-primary-light text-sm mb-8"
-                                        >
-                                            Full Name <span className="text-danger-600">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control radius-8"
-                                            id="name"
-                                            placeholder="Enter Full Name"
-                                        />
-                                    </div>
-                                    <div className="mb-20">
-                                        <label
-                                            htmlFor="email"
-                                            className="form-label fw-semibold text-primary-light text-sm mb-8"
-                                        >
-                                            Email <span className="text-danger-600">*</span>
-                                        </label>
-                                        <input
-                                            type="email"
-                                            className="form-control radius-8"
-                                            id="email"
-                                            placeholder="Enter email address"
-                                        />
-                                    </div>
-                                    <div className="mb-20">
-                                        <label
-                                            htmlFor="number"
-                                            className="form-label fw-semibold text-primary-light text-sm mb-8"
-                                        >
-                                            Phone
-                                        </label>
-                                        <input
-                                            type="email"
-                                            className="form-control radius-8"
-                                            id="number"
-                                            placeholder="Enter phone number"
-                                        />
-                                    </div>
-                                    <div className="mb-20">
-                                        <label
-                                            htmlFor="depart"
-                                            className="form-label fw-semibold text-primary-light text-sm mb-8"
-                                        >
-                                            Department
-                                            <span className="text-danger-600">*</span>{" "}
-                                        </label>
-                                        <select
-                                            className="form-control radius-8 form-select"
-                                            id="depart"
-                                            defaultValue="Enter Event Title"
-                                        >
-                                            <option value="Enter Event Title" disabled>
-                                                Enter Event Title
-                                            </option>
-                                            <option value="Enter Event Title One">Enter Event Title One</option>
-                                            <option value="Enter Event Title Two">Enter Event Title Two</option>
-                                        </select>
-                                    </div>
-                                    <div className="mb-20">
-                                        <label
-                                            htmlFor="desig"
-                                            className="form-label fw-semibold text-primary-light text-sm mb-8"
-                                        >
-                                            Designation
-                                            <span className="text-danger-600">*</span>{" "}
-                                        </label>
-                                        <select
-                                            className="form-control radius-8 form-select"
-                                            id="desig"
-                                            defaultValue="Enter Designation Title"
-                                        >
-                                            <option value="Enter Designation Title" disabled>
-                                                Enter Designation Title
-                                            </option>
-                                            <option value="Enter Designation Title One">Enter Designation Title One</option>
-                                            <option value="Enter Designation Title Two">Enter Designation Title Two</option>
-                                        </select>
-                                    </div>
-                                    <div className="mb-20">
-                                        <label
-                                            htmlFor="desc"
-                                            className="form-label fw-semibold text-primary-light text-sm mb-8"
-                                        >
-                                            Description
-                                        </label>
-                                        <textarea
-                                            name="#0"
-                                            className="form-control radius-8"
-                                            id="desc"
-                                            placeholder="Write description..."
-                                            defaultValue={""}
-                                        />
-                                    </div>
-                                    <div className="d-flex align-items-center justify-content-center gap-3">
-                                        <button
-                                            type="button"
-                                            className="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8"
-                                        >
-                                            Save
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        dispatch(createUser(formData));
+    };
+
+    return (
+        <div className='row justify-content-center'>
+            <div className='col-lg-8 col-xs-12 col-sm-12'>
+                <h4 className="mb-20">Create Admin for Registered Institute</h4>
+                <hr />
+
+                <div className="card p-5">
+                    <form onSubmit={handleSubmit}>
+                        {/* Name */}
+                        <div className="mb-20">
+                            <label className="form-label text-primary-light fw-semibold text-sm mb-8">
+                                Name <span className="text-danger-600">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                className="form-control radius-8"
+                                placeholder="Enter Name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                            />
                         </div>
-                    </div>
+
+                        {/* Email */}
+                        <div className="mb-20">
+                            <label className="form-label text-primary-light fw-semibold text-sm mb-8">
+                                Email <span className="text-danger-600">*</span>
+                            </label>
+                            <input
+                                type="email"
+                                className="form-control radius-8"
+                                placeholder="Enter Email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div className="mb-20">
+                            <label className="form-label text-primary-light fw-semibold text-sm mb-8">
+                                Password <span className="text-danger-600">*</span>
+                            </label>
+                            <input
+                                type="password"
+                                className="form-control radius-8"
+                                placeholder="Enter Password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        {/* Role */}
+                        <div className="mb-20">
+                            <label className="form-label text-primary-light fw-semibold text-sm mb-8">
+                                Role <span className="text-danger-600">*</span>
+                            </label>
+                            <select
+                                className="form-control radius-8 form-select"
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="super-admin">Super Admin</option>
+                                <option value="admin">Admin</option>
+                                <option value="teacher">Teacher</option>
+                            </select>
+                        </div>
+
+                        {/* Institute - only show if role is 'admin' or 'teacher' */}
+                        {(formData.role === 'admin' || formData.role === 'teacher') && (
+                            <div className="mb-20">
+                                <label className="form-label text-primary-light fw-semibold text-sm mb-8">
+                                    Institute <span className="text-danger-600">*</span>
+                                </label>
+                                <select
+                                    className="form-control radius-8 form-select"
+                                    name="instituteId"
+                                    value={formData.instituteId}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="" disabled>
+                                        Select Institute
+                                    </option>
+                                    {institutes.map((inst) => (
+                                        <option key={inst._id} value={inst._id}>
+                                            {inst.name} ({inst.instituteRegNumber})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {/* Submit */}
+                        <div className="d-flex justify-content-end mt-30">
+                            <button
+                                type="submit"
+                                className="btn btn-primary radius-8 px-30"
+                                disabled={loading}
+                            >
+                                {loading ? 'Creating...' : 'Create User'}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-
     );
 };
 

@@ -3,9 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const RoleBasedRoute = ({ children, allowedRoles, pageKey }) => {
-  const { user } = useSelector((state) => state.auth);
-
-  console.log("user from auth", user)
+  const { user } = useSelector((state) => state.auth.user);
 
   // Super admin gets full access
   if (user?.role === 'super-admin') return children;

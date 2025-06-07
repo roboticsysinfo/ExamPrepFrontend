@@ -7,7 +7,7 @@ import {
   createSubject,
   getAllSubjects,
 } from '../redux/slices/subjectSlice';
-import { getAllExams } from '../redux/slices/examSlice';
+import { getExamsByInstituteId } from '../redux/slices/examSlice';
 
 const CreateSubjectForm = () => {
   const dispatch = useDispatch();
@@ -16,16 +16,20 @@ const CreateSubjectForm = () => {
   const [name, setName] = useState('');
   const [exam, setExam] = useState('');
 
-  // Get exams list from redux
+  // Redux states
   const { exams } = useSelector((state) => state.exam);
   const { loading } = useSelector((state) => state.subject);
+  const { user } = useSelector((state) => state.auth.user);
+  const instituteId = user?.instituteId;
 
-  // Load exams on component mount
+  // Fetch exams based on instituteId
   useEffect(() => {
-    dispatch(getAllExams());
-  }, [dispatch]);
+    if (instituteId) {
+      dispatch(getExamsByInstituteId(instituteId));
+    }
+  }, [dispatch, instituteId]);
 
-  // Form submission handler
+  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -35,26 +39,23 @@ const CreateSubjectForm = () => {
     }
 
     try {
-      await dispatch(createSubject({ name, exam })).unwrap();
+      await dispatch(createSubject({ name, exam, instituteId })).unwrap();
       dispatch(getAllSubjects()); // Refresh subject list
       toast.success('Subject created successfully!');
-      navigate('/subjects'); // Navigate to subject list
+      navigate('/subjects'); // Redirect to subjects list
     } catch (err) {
       toast.error(err?.message || 'Failed to create subject');
     }
   };
 
   return (
-
     <Card className="mt-4 shadow-sm">
       <Card.Body>
         <Card.Title>Create New Subject</Card.Title>
 
-        <div className='row justify-content-center'>
-
-          <div className='col-lg-6 col-xs-12 col-sm-12'>
-
-            <Form onSubmit={handleSubmit} className='my-5'>
+        <div className="row justify-content-center">
+          <div className="col-lg-6 col-xs-12 col-sm-12">
+            <Form onSubmit={handleSubmit} className="my-5">
               <Form.Group className="mb-3">
                 <Form.Label>Subject Name</Form.Label>
                 <Form.Control
@@ -82,15 +83,12 @@ const CreateSubjectForm = () => {
                 </Form.Select>
               </Form.Group>
 
-              <Button type="submit" variant="primary" disabled={loading} className='mt-3'>
+              <Button type="submit" variant="primary" disabled={loading} className="mt-3">
                 {loading ? <Spinner size="sm" animation="border" /> : 'Create Subject'}
               </Button>
             </Form>
-
           </div>
-
         </div>
-
       </Card.Body>
     </Card>
   );

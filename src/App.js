@@ -32,6 +32,16 @@ import QuestionsPage from "./pages/QuestionsPage";
 import CreateTestPage from "./pages/CreateTestPage";
 import TestsListPage from "./pages/TestsListPage";
 import EditTestPage from "./pages/EditTestPage";
+import ExamCategoryPage from "./pages/ExamCategoryPage";
+import CreateExamCategoryPage from "./pages/CreateExamCategoryPage";
+import RegisterInstitutePage from "./pages/RegisterInsitutePage";
+import InstitutesListPage from "./pages/InstitutesListPage";
+import UsersListPage from "./pages/UsersListPage";
+import AdmissionQueryPage from "./pages/AdmissonQueryPage";
+import UploadQuestionPaper from "./pages/UploadQuestionPaper";
+import PreviousQuestionPapersListPage from "./pages/PreviousQuestionPapersListPage";
+import PracticeTestFormPage from "./pages/PracticeTestFormPage";
+import PracticeTestsListPage from "./pages/PracticeTestsListPage";
 
 function App() {
 
@@ -41,6 +51,7 @@ function App() {
 
     <BrowserRouter>
       <RouteScrollToTop />
+
       <Routes>
 
         {/* Public Routes */}
@@ -106,6 +117,17 @@ function App() {
         />
 
         <Route
+          path="/admission-query"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin', 'teacher']} pageKey="admission-query">
+                <AdmissionQueryPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
           path="/create-exam"
           element={
             <PrivateRoute>
@@ -148,6 +170,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/subjects"
           element={
@@ -168,6 +191,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/topics"
           element={
@@ -234,6 +258,75 @@ function App() {
           }
         />
 
+        <Route
+          path="/create-practice-test"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="create-practice-test">
+                <PracticeTestFormPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/practice-tests"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="practice-tests">
+                <PracticeTestsListPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+
+
+        <Route
+          path="/create-exam-category"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="create-exam-category">
+                <CreateExamCategoryPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/exam-categories"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="exam-categories">
+                <ExamCategoryPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/upload-question-paper"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="upload-question-paper">
+                <UploadQuestionPaper />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/previous-question-paper"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="previous-question-paper">
+                <PreviousQuestionPapersListPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+
         {/* Super Admin Routes */}
         <Route
           path="/add-user"
@@ -245,6 +338,18 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/users-list"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['super-admin']} pageKey="users-list">
+                <UsersListPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/assign-role"
           element={
@@ -255,6 +360,29 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/register-institute"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['super-admin']} pageKey="register-institute">
+                <RegisterInstitutePage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/institutes"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['super-admin']} pageKey="institutes">
+                <InstitutesListPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
 
         {/* Admin + Super Admin Route */}
         <Route

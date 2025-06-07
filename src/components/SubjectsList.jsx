@@ -3,8 +3,8 @@ import $ from 'jquery';
 import 'datatables.net-dt/js/dataTables.dataTables.js';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteSubject, getAllSubjects, getSubjectById, updateSubject } from '../redux/slices/subjectSlice';
-import { getAllExams } from '../redux/slices/examSlice';
+import { deleteSubject, getAllSubjects, getSubjectById, getSubjectsByInstituteId, updateSubject } from '../redux/slices/subjectSlice';
+import { getAllExams, getExamsByInstituteId } from '../redux/slices/examSlice';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
@@ -13,17 +13,22 @@ const SubjectsList = () => {
     const dispatch = useDispatch();
     const { subjects, subject } = useSelector(state => state.subject);
     const { exams } = useSelector(state => state.exam);
+    const { user } = useSelector(state => state.auth.user);
+    const instituteId = user?.instituteId;
 
     const [showModal, setShowModal] = useState(false);
     const [editData, setEditData] = useState({ id: '', name: '', exam: '' });
 
     useEffect(() => {
-        dispatch(getAllSubjects());
-        dispatch(getAllExams());
+
+        if (instituteId) {
+            dispatch(getSubjectsByInstituteId(instituteId));
+            dispatch(getExamsByInstituteId(instituteId));
+        }
 
         const table = $('#dataTable').DataTable({ pageLength: 10 });
         return () => table.destroy(true);
-    }, [dispatch]);
+    }, [dispatch, instituteId]);
 
     const handleEditClick = async (id) => {
         const result = await dispatch(getSubjectById(id));
@@ -53,8 +58,6 @@ const SubjectsList = () => {
                 });
         }
     };
-
-
 
     return (
         <>

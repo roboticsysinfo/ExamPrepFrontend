@@ -4,20 +4,29 @@ import 'datatables.net-dt/js/dataTables.dataTables.js';
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteStudent, getAllStudents } from '../redux/slices/studentSlice';
+import { deleteStudent, getStudentsByInstituteId } from '../redux/slices/studentSlice';
 import { toast } from 'react-toastify';
 import { Spinner } from 'react-bootstrap';
 
 const StudentsList = () => {
+
     const dispatch = useDispatch();
-    const { students, loading, error } = useSelector((state) => state.student);
+    const { instituteStudents, loading, error } = useSelector((state) => state.student);
+    const { user } = useSelector((state) => state.auth.user);
+    const instituteId = user?.instituteId;
+
+    console.log("user", user)
+    console.log("instituteId", instituteId)
+    console.log("instituteStudents", instituteStudents)
 
     useEffect(() => {
-        dispatch(getAllStudents());
-    }, [dispatch]);
+        if (instituteId) {
+            dispatch(getStudentsByInstituteId(instituteId));
+        }
+    }, [dispatch, instituteId]);
 
     useEffect(() => {
-        if (students.length > 0) {
+        if (instituteStudents.length > 0) {
             const table = $('#dataTable').DataTable({
                 pageLength: 10,
                 destroy: true, // Important to allow reinitialization
@@ -27,11 +36,10 @@ const StudentsList = () => {
                 table.destroy(true);
             };
         }
-    }, [students]);
+    }, [instituteStudents]);
 
     if (loading) return <div className="text-center py-4"><Spinner variant='blue' /></div>;
     if (error) return <div className="text-danger text-center py-4">{error}</div>;
-
 
     const handleDelete = (id) => {
         const confirmed = window.confirm("Are you sure you want to delete student?");
@@ -40,14 +48,15 @@ const StudentsList = () => {
                 .unwrap()
                 .then(() => {
                     toast.success("Student deleted successfully.");
-                    dispatch(getAllStudents()); // Refresh list
+                    if (instituteId) {
+                        dispatch(getStudentsByInstituteId(instituteId)); // Refresh list after delete
+                    }
                 })
-                .catch((err) => {
+                .catch(() => {
                     toast.error("Failed to delete student. Please try again.");
                 });
         }
     };
-
 
     return (
         <div className="card basic-data-table">
@@ -63,14 +72,13 @@ const StudentsList = () => {
                             <th>Student Name</th>
                             <th>Father Name</th>
                             <th>Mother Name</th>
-
                             <th>City</th>
                             <th>Join Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {students?.map((student) => (
+                        {instituteStudents?.map((student) => (
                             <tr key={student._id}>
                                 <td>{student.registrationNumber}</td>
                                 <td>
@@ -102,8 +110,6 @@ const StudentsList = () => {
                                     >
                                         <Icon icon="mingcute:delete-2-line" />
                                     </button>
-
-
                                 </td>
                             </tr>
                         ))}

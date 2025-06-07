@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/axios';
 
-
-// ✅ 1. Create Exam
+// ✅ Create Exam
 export const createExam = createAsyncThunk(
     'exam/createExam',
     async (formData, { rejectWithValue }) => {
@@ -17,8 +16,7 @@ export const createExam = createAsyncThunk(
     }
 );
 
-
-// ✅ 2. Update Exam
+// ✅ Update Exam
 export const updateExam = createAsyncThunk(
     'exam/updateExam',
     async ({ id, formData }, { rejectWithValue }) => {
@@ -33,8 +31,7 @@ export const updateExam = createAsyncThunk(
     }
 );
 
-
-// ✅ 3. Delete Exam
+// ✅ Delete Exam
 export const deleteExam = createAsyncThunk(
     'exam/deleteExam',
     async (id, { rejectWithValue }) => {
@@ -47,8 +44,7 @@ export const deleteExam = createAsyncThunk(
     }
 );
 
-
-// ✅ 4. Get Single Exam
+// ✅ Get Single Exam
 export const getExamById = createAsyncThunk(
     'exam/getExamById',
     async (id, { rejectWithValue }) => {
@@ -61,8 +57,7 @@ export const getExamById = createAsyncThunk(
     }
 );
 
-
-// ✅ 5. Get All Exams
+// ✅ Get All Exams
 export const getAllExams = createAsyncThunk(
     'exam/getAllExams',
     async (_, { rejectWithValue }) => {
@@ -75,6 +70,18 @@ export const getAllExams = createAsyncThunk(
     }
 );
 
+// ✅ Get Exams by Institute ID
+export const getExamsByInstituteId = createAsyncThunk(
+    'exam/getExamsByInstituteId',
+    async (instituteId, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/exams/institute/${instituteId}`);
+            return res.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Fetch failed');
+        }
+    }
+);
 
 // ✅ Initial State
 const initialState = {
@@ -84,7 +91,6 @@ const initialState = {
     error: null,
     successMessage: null,
 };
-
 
 // ✅ Slice
 const examSlice = createSlice({
@@ -101,7 +107,6 @@ const examSlice = createSlice({
             // 🔹 Create
             .addCase(createExam.pending, (state) => {
                 state.loading = true;
-                state.error = null;
             })
             .addCase(createExam.fulfilled, (state, action) => {
                 state.loading = false;
@@ -116,7 +121,6 @@ const examSlice = createSlice({
             // 🔹 Update
             .addCase(updateExam.pending, (state) => {
                 state.loading = true;
-                state.error = null;
             })
             .addCase(updateExam.fulfilled, (state, action) => {
                 state.loading = false;
@@ -133,7 +137,6 @@ const examSlice = createSlice({
             // 🔹 Delete
             .addCase(deleteExam.pending, (state) => {
                 state.loading = true;
-                state.error = null;
             })
             .addCase(deleteExam.fulfilled, (state, action) => {
                 state.loading = false;
@@ -149,7 +152,6 @@ const examSlice = createSlice({
             .addCase(getExamById.pending, (state) => {
                 state.loading = true;
                 state.selectedExam = null;
-                state.error = null;
             })
             .addCase(getExamById.fulfilled, (state, action) => {
                 state.loading = false;
@@ -163,13 +165,25 @@ const examSlice = createSlice({
             // 🔹 Get All
             .addCase(getAllExams.pending, (state) => {
                 state.loading = true;
-                state.error = null;
             })
             .addCase(getAllExams.fulfilled, (state, action) => {
                 state.loading = false;
                 state.exams = action.payload;
             })
             .addCase(getAllExams.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // 🔹 Get by Institute
+            .addCase(getExamsByInstituteId.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(getExamsByInstituteId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.exams = action.payload;
+            })
+            .addCase(getExamsByInstituteId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

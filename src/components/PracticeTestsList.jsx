@@ -1,57 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTestsByInstituteId, deleteTest } from '../redux/slices/testSlice';
+import { fetchPracticeTestsByInstitute, deletePracticeTest } from '../redux/slices/practiceTestSlice';
 import { Link } from 'react-router-dom';
 import { Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
-const TestsList = () => {
+const PracticeTestsList = () => {
 
     const dispatch = useDispatch();
-    const { tests, loading, error, successMessage } = useSelector((state) => state.test);
+    const { practiceTests, loading, error, successMessage } = useSelector((state) => state.practiceTests);
     const { user } = useSelector((state) => state.auth.user);
-    const instituteId = user?.instituteId;
-
+    const instituteId = user?.instituteId
 
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredTests, setFilteredTests] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const testsPerPage = 10; // aap chahe toh change kar sakte hain
+    const testsPerPage = 10;
 
     useEffect(() => {
         if (instituteId) {
-            dispatch(fetchTestsByInstituteId(instituteId));
+            dispatch(fetchPracticeTestsByInstitute(instituteId));
         }
     }, [dispatch, instituteId]);
 
-    // Filter tests based on search term
     useEffect(() => {
         if (!searchTerm.trim()) {
-            setFilteredTests(tests);
-            setCurrentPage(1); // reset page on search clear
+            setFilteredTests(practiceTests);
+            setCurrentPage(1);
             return;
         }
 
         const lowerSearch = searchTerm.toLowerCase();
 
-        const filtered = tests.filter((test) => {
+        const filtered = practiceTests.filter((test) => {
             const examName = test.exam?.name?.toLowerCase() || '';
             const subjectName = test.subject?.name?.toLowerCase() || '';
             const topicName = test.topic?.name?.toLowerCase() || '';
+            const title = test.title?.toLowerCase() || '';
 
             return (
                 examName.includes(lowerSearch) ||
                 subjectName.includes(lowerSearch) ||
-                topicName.includes(lowerSearch)
+                topicName.includes(lowerSearch) ||
+                title.includes(lowerSearch)
             );
         });
 
         setFilteredTests(filtered);
-        setCurrentPage(1); // reset page on new search
-    }, [searchTerm, tests]);
+        setCurrentPage(1);
+    }, [searchTerm, practiceTests]);
 
-    // Pagination logic: get current page's tests
     const indexOfLastTest = currentPage * testsPerPage;
     const indexOfFirstTest = indexOfLastTest - testsPerPage;
     const currentTests = filteredTests.slice(indexOfFirstTest, indexOfLastTest);
@@ -59,41 +58,41 @@ const TestsList = () => {
     const totalPages = Math.ceil(filteredTests.length / testsPerPage);
 
     const handleDelete = (id) => {
-        const confirmed = window.confirm("Are you sure you want to delete this test?");
+        const confirmed = window.confirm("Are you sure you want to delete this practice test?");
         if (confirmed) {
-            dispatch(deleteTest(id))
+            dispatch(deletePracticeTest(id))
                 .unwrap()
                 .then(() => {
-                    toast.success("Test deleted successfully.");
+                    toast.success("Practice test deleted successfully.");
                 })
                 .catch(() => {
-                    toast.error("Failed to delete test. Please try again.");
+                    toast.error("Failed to delete practice test. Please try again.");
                 });
         }
     };
 
-    // Pagination button click handler
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
-
         <div className="card basic-data-table">
 
             <div className="card-header d-flex justify-content-between align-items-center">
-                <h5 className="card-title mb-0">Mock Tests List</h5>
-                <Link to="/create-test" className="btn btn-primary btn-sm">
-                    + Create Test
+                <h5 className="card-title mb-0">Practice Tests List</h5>
+                <Link to="/create-practice-test" className="btn btn-primary btn-sm">
+                    + Create Practice Test
                 </Link>
             </div>
 
             <div className="card-body">
-
                 {loading && <Spinner variant="primary" />}
+
+                {error && <div className="alert alert-danger">{error}</div>}
+                {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
                 <div className="mb-3">
                     <input
                         type="text"
-                        placeholder="Search by Exam, Subject, Topic..."
+                        placeholder="Search by Title, Exam, Subject, Topic..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="form-control"
@@ -120,8 +119,8 @@ const TestsList = () => {
                         <tbody>
                             {currentTests.length === 0 && (
                                 <tr>
-                                    <td colSpan="9" className="text-center">
-                                        No tests found.
+                                    <td colSpan="8" className="text-center">
+                                        No practice tests found.
                                     </td>
                                 </tr>
                             )}
@@ -136,7 +135,7 @@ const TestsList = () => {
                                     <td>{test.totalMarks || '-'}</td>
                                     <td>
                                         <Link
-                                            to={`/test/edit/${test._id}`}
+                                            to={`/practice-test/edit/${test._id}`}
                                             className="btn btn-sm btn-success me-1"
                                             title="Edit"
                                         >
@@ -157,7 +156,6 @@ const TestsList = () => {
                     </table>
                 </div>
 
-                {/* Pagination Controls */}
                 {totalPages > 1 && (
                     <nav className="mt-3">
                         <ul className="pagination justify-content-center">
@@ -197,4 +195,4 @@ const TestsList = () => {
     );
 };
 
-export default TestsList;
+export default PracticeTestsList;

@@ -48,6 +48,17 @@ export const deleteTest = createAsyncThunk('test/deleteTest', async (id, thunkAP
   }
 });
 
+
+// 🔹 Optional: Fetch by Institute ID
+export const fetchTestsByInstituteId = createAsyncThunk('test/fetchTestsByInstituteId', async (instituteId, thunkAPI) => {
+  try {
+    const res = await api.get(`/mock-tests/by-institute/${instituteId}`);
+    return res.data.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch tests by institute');
+  }
+});
+
 // 🔹 Slice
 
 const testSlice = createSlice({
@@ -69,7 +80,7 @@ const testSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // Create Test
+      // Create
       .addCase(createTest.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -77,14 +88,14 @@ const testSlice = createSlice({
       .addCase(createTest.fulfilled, (state, action) => {
         state.loading = false;
         state.tests.push(action.payload);
-        state.successMessage = 'Test created successfully';
+        state.successMessage = 'Mock test created successfully';
       })
       .addCase(createTest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Fetch All Tests
+      // Fetch All
       .addCase(fetchAllTests.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -98,7 +109,7 @@ const testSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch Test by ID
+      // Fetch by ID
       .addCase(fetchTestById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -112,7 +123,7 @@ const testSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Update Test
+      // Update
       .addCase(updateTest.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -122,14 +133,14 @@ const testSlice = createSlice({
         state.tests = state.tests.map((test) =>
           test._id === action.payload._id ? action.payload : test
         );
-        state.successMessage = 'Test updated successfully';
+        state.successMessage = 'Mock test updated successfully';
       })
       .addCase(updateTest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Delete Test
+      // Delete
       .addCase(deleteTest.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -140,6 +151,20 @@ const testSlice = createSlice({
         state.successMessage = action.payload.message;
       })
       .addCase(deleteTest.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Fetch by Institute
+      .addCase(fetchTestsByInstituteId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTestsByInstituteId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tests = action.payload;
+      })
+      .addCase(fetchTestsByInstituteId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

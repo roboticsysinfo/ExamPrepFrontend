@@ -3,23 +3,27 @@ import $ from 'jquery';
 import 'datatables.net-dt/js/dataTables.dataTables.js';
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
-import { deleteExam, getAllExams } from '../redux/slices/examSlice';
+import { deleteExam, getAllExams, getExamsByInstituteId } from '../redux/slices/examSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const ExamsList = () => {
     const dispatch = useDispatch();
     const { exams, loading } = useSelector((state) => state.exam);
+    const { user } = useSelector((state) => state.auth.user);
+    const instituteId = user?.instituteId
+
 
     // Ref to track if DataTable is initialized
     const tableInitialized = useRef(false);
 
-
     useEffect(() => {
-        dispatch(getAllExams());
+        if (instituteId) {
+            dispatch(getExamsByInstituteId(instituteId));
+        }
         const table = $('#dataTable').DataTable({ pageLength: 10 });
         return () => table.destroy(true);
-    }, [dispatch]);
+    }, [dispatch, instituteId]);
 
     const handleDelete = (id) => {
         const confirmed = window.confirm("Are you sure you want to delete this exam?");
@@ -51,6 +55,7 @@ const ExamsList = () => {
                             <th>S.No</th>
                             <th>Image</th>
                             <th>Exam Name</th>
+                            <th>Exam Category</th>
                             <th>Description</th>
                             <th>Actions</th>
                         </tr>
@@ -67,6 +72,7 @@ const ExamsList = () => {
                                     />
                                 </td>
                                 <td>{exam.name}</td>
+                                <td>{exam.examCategory?.name}</td>
                                 <td>{exam.description}</td>
                                 <td>
                                     <Link to={`/exam/edit/${exam._id}`} className="btn btn-sm btn-success me-2">

@@ -3,7 +3,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/axios';
 
-
 // 🔹 Register Student
 export const registerStudent = createAsyncThunk(
     'student/register',
@@ -35,7 +34,7 @@ export const updateStudent = createAsyncThunk(
     'student/update',
     async ({ id, data }, { rejectWithValue }) => {
         try {
-            const res = await api.put(`/update-student/${id}`, data);
+            const res = await api.put(`/update/student/${id}`, data);
             return res.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -48,14 +47,13 @@ export const deleteStudent = createAsyncThunk(
     'student/delete',
     async (id, { rejectWithValue }) => {
         try {
-            const res = await api.delete(`/delete-student/${id}`);
+            const res = await api.delete(`/delete/student/${id}`);
             return res.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
     }
 );
-
 
 // 🔹 Get all students
 export const getAllStudents = createAsyncThunk(
@@ -70,11 +68,24 @@ export const getAllStudents = createAsyncThunk(
     }
 );
 
+// 🔹 Get Students by Institute ID
+export const getStudentsByInstituteId = createAsyncThunk(
+    'student/getByInstituteId',
+    async (instituteId, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/get-students-by-institute/${instituteId}`);
+            return res.data.data; // Assuming data contains array of students
+        } catch (err) {
+            return rejectWithValue(err.response.data.message);
+        }
+    }
+);
 
 const studentSlice = createSlice({
     name: 'student',
     initialState: {
         students: [],
+        instituteStudents: [],   // added to store students by institute
         student: null,
         loading: false,
         error: null,
@@ -154,6 +165,20 @@ const studentSlice = createSlice({
                 state.students = action.payload;
             })
             .addCase(getAllStudents.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Get Students by Institute ID
+            .addCase(getStudentsByInstituteId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getStudentsByInstituteId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.instituteStudents = action.payload;
+            })
+            .addCase(getStudentsByInstituteId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

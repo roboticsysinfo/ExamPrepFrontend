@@ -11,13 +11,13 @@ const MasterLayout = ({ children }) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth.user);
 
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation(); // Hook to get the current route
 
-  console.log("user header", user)
+  console.log("user", user)
 
   useEffect(() => {
 
@@ -191,10 +191,32 @@ const MasterLayout = ({ children }) => {
                   </NavLink>
                 </li>
 
+                <li>
+                  <NavLink
+                    to='/admission-query'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-purple w-auto' />{" "}
+                    Admission Query
+                  </NavLink>
+                </li>
+
               </ul>
             </li>
 
             <li className='sidebar-menu-group-title'>Pages</li>
+
+            <li>
+              <NavLink
+                to='/exam-categories'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon icon='mage:file' className='menu-icon' />
+                <span>Exam Categories</span>
+              </NavLink>
+            </li>
 
             <li>
               <NavLink
@@ -216,7 +238,6 @@ const MasterLayout = ({ children }) => {
                 <span>Subjects</span>
               </NavLink>
             </li>
-
 
             <li>
               <NavLink
@@ -249,101 +270,123 @@ const MasterLayout = ({ children }) => {
             </li>
 
 
-            {/* Settings Dropdown */}
-            <li className='dropdown'>
-              <Link to='#'>
-                <Icon
-                  icon='icon-park-outline:setting-two'
-                  className='menu-icon'
-                />
-                <span>Settings</span>
-              </Link>
-              <ul className='sidebar-submenu'>
-
-                <li>
-                  <NavLink
-                    to='/notification'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
-                    Notification
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to='/theme'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
-                    Theme
-                  </NavLink>
-                </li>
-
-              </ul>
+            <li>
+              <NavLink
+                to='/practice-tests'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon icon='mage:tag' className='menu-icon' />
+                <span>Practice Tests</span>
+              </NavLink>
             </li>
 
 
-            {/* Users Dropdown */}
-            <li className='dropdown'>
-              <Link to='#'>
-                <Icon
-                  icon='flowbite:users-group-outline'
-                  className='menu-icon'
-                />
-                <span>Users</span>
-              </Link>
-              <ul className='sidebar-submenu'>
-                <li>
-                  <NavLink
-                    to='/users-list'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
-                    Users List
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/users-grid'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
-                    Users Grid
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/add-user'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    Add User
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/view-profile'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
-                    View Profile
-                  </NavLink>
-                </li>
-              </ul>
+            <li>
+              <NavLink
+                to='/previous-question-paper'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon icon='mage:tag' className='menu-icon' />
+                <span>Previous Question Paper</span>
+              </NavLink>
             </li>
+
+
+            {!(user.role === 'admin' || user.role === 'teacher') && (
+              <li>
+                <NavLink
+                  to='/institutes'
+                  className={(navData) => (navData.isActive ? 'active-page' : '')}
+                >
+                  <Icon icon='mage:tag' className='menu-icon' />
+                  <span>Manage Institutes</span>
+                </NavLink>
+              </li>
+            )}
+
+            {!(user.role === 'admin' || user.role === 'teacher') && (
+
+              <li className='dropdown'>
+                <Link to='#'>
+                  <Icon
+                    icon='flowbite:users-group-outline'
+                    className='menu-icon'
+                  />
+                  <span>Users</span>
+                </Link>
+                <ul className='sidebar-submenu'>
+                  <li>
+                    <NavLink
+                      to='/users-list'
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
+                      Users List
+                    </NavLink>
+                  </li>
+
+
+                  <li>
+                    <NavLink
+                      to='/add-user'
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
+                      Add User
+                    </NavLink>
+                  </li>
+
+                </ul>
+              </li>
+
+            )}
+
+            {user.role !== 'teacher' && (
+              <li className='dropdown'>
+
+                <Link to='#'>
+                  <Icon
+                    icon='icon-park-outline:setting-two'
+                    className='menu-icon'
+                  />
+                  <span>Settings</span>
+                </Link>
+
+                <ul className='sidebar-submenu'>
+
+                  <li>
+                    <NavLink
+                      to='/notification'
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
+                      Notification
+                    </NavLink>
+                  </li>
+
+                  <li>
+                    <NavLink
+                      to='/theme'
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
+                      Theme
+                    </NavLink>
+                  </li>
+
+                </ul>
+              </li>
+            )}
+
+
 
             {/* Role & Access Dropdown */}
             <li className='dropdown'>
@@ -636,7 +679,7 @@ const MasterLayout = ({ children }) => {
           </div>
         </footer>
       </main>
-    </section>
+    </section >
   );
 };
 

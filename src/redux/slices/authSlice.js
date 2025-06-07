@@ -4,7 +4,7 @@ import api from "../../utils/axios"
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'));
 
-
+console.log("user auth slice", user )
 
 // Async thunk for login
 export const loginUser = createAsyncThunk(

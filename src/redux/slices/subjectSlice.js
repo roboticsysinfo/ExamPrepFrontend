@@ -1,15 +1,15 @@
 // src/redux/slices/subjectSlice.js
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/axios';
 
 // 🔁 Async Thunks
 
-// Create subject
 export const createSubject = createAsyncThunk(
   'subject/create',
-  async ({ name, exam }, { rejectWithValue }) => {
+  async ({ name, exam, instituteId }, { rejectWithValue }) => {
     try {
-      const response = await api.post('/create-subject', { name, exam });
+      const response = await api.post('/create-subject', { name, exam, instituteId });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Something went wrong');
@@ -17,7 +17,6 @@ export const createSubject = createAsyncThunk(
   }
 );
 
-// Get all subjects (optional exam filter)
 export const getAllSubjects = createAsyncThunk(
   'subject/getAll',
   async (examId = '', { rejectWithValue }) => {
@@ -31,7 +30,31 @@ export const getAllSubjects = createAsyncThunk(
   }
 );
 
-// Get subject by ID
+export const getSubjectsByInstituteId = createAsyncThunk(
+  'subject/getByInstitute',
+  async (instituteId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/subjects/by-institute/${instituteId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to fetch by institute');
+    }
+  }
+);
+
+// ** Naya thunk for fetching subjects by exam ID **
+export const getSubjectsByExamId = createAsyncThunk(
+  'subject/getByExamId',
+  async (examId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/subjects/by-exam/${examId}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to fetch subjects by exam');
+    }
+  }
+);
+
 export const getSubjectById = createAsyncThunk(
   'subject/getById',
   async (id, { rejectWithValue }) => {
@@ -44,12 +67,11 @@ export const getSubjectById = createAsyncThunk(
   }
 );
 
-// Update subject
 export const updateSubject = createAsyncThunk(
   'subject/update',
-  async ({ id, name, exam }, { rejectWithValue }) => {
+  async ({ id, name, exam, instituteId }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/update/subject/${id}`, { name, exam });
+      const response = await api.put(`/update/subject/${id}`, { name, exam, instituteId });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Update failed');
@@ -57,7 +79,6 @@ export const updateSubject = createAsyncThunk(
   }
 );
 
-// Delete subject
 export const deleteSubject = createAsyncThunk(
   'subject/delete',
   async (id, { rejectWithValue }) => {
@@ -89,7 +110,7 @@ const subjectSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Create
+      // createSubject
       .addCase(createSubject.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -104,7 +125,7 @@ const subjectSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Get All
+      // getAllSubjects
       .addCase(getAllSubjects.pending, (state) => {
         state.loading = true;
       })
@@ -117,7 +138,34 @@ const subjectSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Get by ID
+      // getSubjectsByInstituteId
+      .addCase(getSubjectsByInstituteId.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getSubjectsByInstituteId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.subjects = action.payload;
+      })
+      .addCase(getSubjectsByInstituteId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // getSubjectsByExamId - naya added part
+      .addCase(getSubjectsByExamId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getSubjectsByExamId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.subjects = action.payload;
+      })
+      .addCase(getSubjectsByExamId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // getSubjectById
       .addCase(getSubjectById.pending, (state) => {
         state.loading = true;
       })
@@ -130,7 +178,7 @@ const subjectSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Update
+      // updateSubject
       .addCase(updateSubject.pending, (state) => {
         state.loading = true;
       })
@@ -147,7 +195,7 @@ const subjectSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Delete
+      // deleteSubject
       .addCase(deleteSubject.pending, (state) => {
         state.loading = true;
       })

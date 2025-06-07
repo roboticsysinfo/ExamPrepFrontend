@@ -11,6 +11,26 @@ export const getAllTopics = createAsyncThunk('topics/getAll', async (_, thunkAPI
   }
 });
 
+// 🔹 Get Topics by Institute ID
+export const getTopicsByInstituteId = createAsyncThunk('topics/getByInstituteId', async (instituteId, thunkAPI) => {
+  try {
+    const res = await api.get(`/topics/institute/${instituteId}`);
+    return res.data.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data.message || 'Failed to fetch topics by institute');
+  }
+});
+
+// 🔹 Get Topics by Subject ID
+export const getTopicsBySubjectId = createAsyncThunk('topics/getBySubjectId', async (subjectId, thunkAPI) => {
+  try {
+    const res = await api.get(`/topics/by-subject/${subjectId}`);
+    return res.data.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch topics by subject');
+  }
+});
+
 // 🔹 Create Topic
 export const createTopic = createAsyncThunk('topics/create', async (topicData, thunkAPI) => {
   try {
@@ -24,7 +44,7 @@ export const createTopic = createAsyncThunk('topics/create', async (topicData, t
 // 🔹 Update Topic
 export const updateTopic = createAsyncThunk('topics/update', async ({ id, updatedData }, thunkAPI) => {
   try {
-    const res = await api.put(`/${id}`, updatedData);
+    const res = await api.put(`/topics/${id}`, updatedData);
     return res.data.data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data.message || 'Failed to update topic');
@@ -34,8 +54,8 @@ export const updateTopic = createAsyncThunk('topics/update', async ({ id, update
 // 🔹 Delete Topic
 export const deleteTopic = createAsyncThunk('topics/delete', async (id, thunkAPI) => {
   try {
-    const res = await api.delete(`/delete/topic/${id}`);
-    return id; // Just return id to remove from local state
+    await api.delete(`/delete/topic/${id}`);
+    return id; // Return the deleted topic ID
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data.message || 'Failed to delete topic');
   }
@@ -51,8 +71,7 @@ const topicSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-
-      // Get All
+      // 🔹 Get All Topics
       .addCase(getAllTopics.pending, (state) => {
         state.loading = true;
       })
@@ -66,7 +85,35 @@ const topicSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Create
+      // 🔹 Get Topics by Institute ID
+      .addCase(getTopicsByInstituteId.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getTopicsByInstituteId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.topics = action.payload;
+        state.error = null;
+      })
+      .addCase(getTopicsByInstituteId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // 🔹 Get Topics by Subject ID
+      .addCase(getTopicsBySubjectId.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getTopicsBySubjectId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.topics = action.payload;
+        state.error = null;
+      })
+      .addCase(getTopicsBySubjectId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // 🔹 Create Topic
       .addCase(createTopic.fulfilled, (state, action) => {
         state.topics.push(action.payload);
         state.error = null;
@@ -75,7 +122,7 @@ const topicSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Update
+      // 🔹 Update Topic
       .addCase(updateTopic.fulfilled, (state, action) => {
         const index = state.topics.findIndex((t) => t._id === action.payload._id);
         if (index !== -1) {
@@ -87,7 +134,7 @@ const topicSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Delete
+      // 🔹 Delete Topic
       .addCase(deleteTopic.fulfilled, (state, action) => {
         state.topics = state.topics.filter((t) => t._id !== action.payload);
         state.error = null;

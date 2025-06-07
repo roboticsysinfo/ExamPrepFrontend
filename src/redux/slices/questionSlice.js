@@ -2,91 +2,259 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/axios';
 
 
-// Async thunks
-export const fetchAllQuestions = createAsyncThunk('questions/fetchAll', async () => {
-    const response = await api.get('/all/questions');
-    return response.data.data;
-});
-
-export const createQuestion = createAsyncThunk('questions/create', async (formData) => {
-    const response = await api.post('/create-question', formData);
-    return response.data.data;
-});
-
-export const updateQuestion = createAsyncThunk('questions/update', async ({ id, formData }) => {
-    const response = await api.put(`/update-question/${id}`, formData);
-    return response.data.data;
-});
-
-export const deleteQuestion = createAsyncThunk('questions/delete', async (id) => {
-    await api.delete(`/delete-question/${id}`);
-    return id;
-});
-
-export const fetchQuestionById = createAsyncThunk('questions/fetchOne', async (id) => {
-    const response = await api.get(`/single-question/${id}`);
-    return response.data.data;
-});
-
-
-// 🔷 Thunk: Bulk Create Questions
-export const bulkCreateQuestions = createAsyncThunk(
-    'questions/bulkCreate',
-    async (questions, { rejectWithValue }) => {
+// Create Question
+export const createQuestion = createAsyncThunk(
+    'question/createQuestion',
+    async (questionData, { rejectWithValue }) => {
         try {
-            const response = await api.post('/create-bulk-questions', { questions });
-            return response.data.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+            const res = await api.post(`/create-question`, questionData);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
 
 
-export const fetchQuestionsByFilter = createAsyncThunk(
-  'questions/fetchByFilter',
-  async ({ exam, subject, topic }) => {
-    const res = await api.get('/questions/filter', {
-      params: { exam, subject, topic }
-    });
-    return res.data.data;
-  }
+// Bulk Create Questions
+export const bulkCreateQuestions = createAsyncThunk(
+    'question/bulkCreateQuestions',
+    async (questionsArray, { rejectWithValue }) => {
+        try {
+            const res = await api.post(`/create-bulk-questions`, { questions: questionsArray });
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
 );
 
 
-// Initial state
+// Update Question
+export const updateQuestion = createAsyncThunk(
+    'question/updateQuestion',
+    async ({ id, data }, { rejectWithValue }) => {
+        try {
+            const res = await api.put(`/update-question/${id}`, data);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+);
+
+// Delete Question
+export const deleteQuestion = createAsyncThunk(
+    'question/deleteQuestion',
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await api.delete(`/delete-question/${id}`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+);
+
+// Get Question by ID
+export const getQuestionById = createAsyncThunk(
+    'question/getQuestionById',
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/single-question/${id}`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+);
+
+// Get All Questions
+export const getAllQuestions = createAsyncThunk(
+    'question/getAllQuestions',
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/all/questions`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+);
+
+// Get Questions by Filter
+export const getQuestionsByFilter = createAsyncThunk(
+    'question/getQuestionsByFilter',
+    async (filters, { rejectWithValue }) => {
+        try {
+            const params = new URLSearchParams(filters).toString();
+            const res = await api.get(`/questions/filter?${params}`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+);
+
+
+// ✅ Get Questions by Institute ID
+export const getQuestionsByInstituteId = createAsyncThunk(
+    'question/getQuestionsByInstituteId',
+    async (instituteId, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/questions/institute/${instituteId}`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+);
+
+export const fetchQuestionsByFilter = createAsyncThunk(
+    'questions/fetchByFilter',
+    async ({ exam, subject, topic }) => {
+        const res = await api.get('/questions/filter', {
+            params: { exam, subject, topic }  // difficulty removed here
+        });
+        return res.data.data;
+    }
+);
+
+
+
+// Initial State
 const initialState = {
     questions: [],
     selectedQuestion: null,
     loading: false,
     error: null,
-    success: false,
 };
 
-
-// Slice
 const questionSlice = createSlice({
-    name: 'questions',
+    name: 'question',
     initialState,
     reducers: {
         clearSelectedQuestion: (state) => {
             state.selectedQuestion = null;
         },
+        clearQuestionError: (state) => {
+            state.error = null;
+        },
     },
     extraReducers: (builder) => {
         builder
-            // Fetch all
-            .addCase(fetchAllQuestions.pending, (state) => {
+
+            // Create
+            .addCase(createQuestion.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchAllQuestions.fulfilled, (state, action) => {
+            .addCase(createQuestion.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questions.push(action.payload);
+            })
+            .addCase(createQuestion.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Bulk Create
+            .addCase(bulkCreateQuestions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(bulkCreateQuestions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questions = [...state.questions, ...action.payload];
+            })
+            .addCase(bulkCreateQuestions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Update
+            .addCase(updateQuestion.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateQuestion.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.questions.findIndex(q => q._id === action.payload._id);
+                if (index !== -1) state.questions[index] = action.payload;
+            })
+            .addCase(updateQuestion.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Delete
+            .addCase(deleteQuestion.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteQuestion.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questions = state.questions.filter(q => q._id !== action.payload._id);
+            })
+            .addCase(deleteQuestion.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Get By ID
+            .addCase(getQuestionById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getQuestionById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedQuestion = action.payload;
+            })
+            .addCase(getQuestionById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Get All
+            .addCase(getAllQuestions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAllQuestions.fulfilled, (state, action) => {
                 state.loading = false;
                 state.questions = action.payload;
             })
-            .addCase(fetchAllQuestions.rejected, (state, action) => {
+            .addCase(getAllQuestions.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
+            })
+
+            // Get by Filter
+            .addCase(getQuestionsByFilter.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getQuestionsByFilter.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questions = action.payload;
+            })
+            .addCase(getQuestionsByFilter.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // ✅ Get by Institute ID
+            .addCase(getQuestionsByInstituteId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getQuestionsByInstituteId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questions = action.payload;
+            })
+            .addCase(getQuestionsByInstituteId.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
 
             // Fetch by filter (new)
@@ -103,47 +271,9 @@ const questionSlice = createSlice({
                 state.error = action.error.message;
             })
 
-            // Create
-            .addCase(createQuestion.fulfilled, (state, action) => {
-                state.questions.push(action.payload);
-            })
-
-            // Update
-            .addCase(updateQuestion.fulfilled, (state, action) => {
-                const index = state.questions.findIndex(q => q._id === action.payload._id);
-                if (index !== -1) {
-                    state.questions[index] = action.payload;
-                }
-            })
-
-            // Delete
-            .addCase(deleteQuestion.fulfilled, (state, action) => {
-                state.questions = state.questions.filter(q => q._id !== action.payload);
-            })
-
-            // Fetch one
-            .addCase(fetchQuestionById.fulfilled, (state, action) => {
-                state.selectedQuestion = action.payload;
-            })
-
-            // Bulk create
-            .addCase(bulkCreateQuestions.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.success = false;
-            })
-            .addCase(bulkCreateQuestions.fulfilled, (state, action) => {
-                state.loading = false;
-                state.success = true;
-                state.questions = action.payload;
-            })
-            .addCase(bulkCreateQuestions.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload || 'Failed to create questions';
-                state.success = false;
-            });
-    },
+    }
 });
 
-export const { clearSelectedQuestion } = questionSlice.actions;
+export const { clearSelectedQuestion, clearQuestionError } = questionSlice.actions;
+
 export default questionSlice.reducer;

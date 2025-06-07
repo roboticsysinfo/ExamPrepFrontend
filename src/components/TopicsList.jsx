@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllTopics, deleteTopic, updateTopic } from '../redux/slices/topicSlice';
+import { getAllTopics, deleteTopic, updateTopic, getTopicsByInstituteId } from '../redux/slices/topicSlice';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Modal, Button } from 'react-bootstrap';
-import {
-  getAllSubjects,
-} from '../redux/slices/subjectSlice';
+
 
 const TopicsList = () => {
   const dispatch = useDispatch();
@@ -15,15 +13,19 @@ const TopicsList = () => {
   // Getting topics & subjects from Redux store
   const { topics, loading, error } = useSelector((state) => state.topics);
   const { subjects } = useSelector((state) => state.subject);  // assuming you have this slice
+  const { user } = useSelector((state) => state.auth.user);
+  const instituteId = user?.instituteId;
+
 
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [updatedTitle, setUpdatedTitle] = useState('');
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [showModal, setShowModal] = useState(false);
 
+
   // Fetch Topics on mount
   useEffect(() => {
-    dispatch(getAllTopics());
+    dispatch(getTopicsByInstituteId(instituteId));
   }, [dispatch]);
 
   // Open Edit Modal and prefill title and subject

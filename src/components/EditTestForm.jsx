@@ -10,12 +10,21 @@ import {
     clearTestState,
 } from '../redux/slices/testSlice';
 
-import { getAllExams } from '../redux/slices/examSlice';
-import { getAllSubjects } from '../redux/slices/subjectSlice';
-import { getAllTopics } from '../redux/slices/topicSlice';
-import { fetchQuestionsByFilter } from '../redux/slices/questionSlice';
+import {
+    getExamsByInstituteId,
+} from '../redux/slices/examSlice';
+import {
+    getSubjectsByExamId,
+} from '../redux/slices/subjectSlice';
+import {
+    getTopicsBySubjectId,
+} from '../redux/slices/topicSlice';
+import {
+    fetchQuestionsByFilter,
+} from '../redux/slices/questionSlice';
 
 const EditTestForm = () => {
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
@@ -24,28 +33,63 @@ const EditTestForm = () => {
     const { subjects } = useSelector((state) => state.subject);
     const { topics } = useSelector((state) => state.topics);
     const { questions } = useSelector((state) => state.questions);
+    const { user } = useSelector((state) => state.auth.user);
     const { currentTest, successMessage, error } = useSelector((state) => state.test);
+
+    const instituteId = user?.instituteId
 
     console.log("current test", currentTest)
 
     const [formData, setFormData] = useState({
         title: '',
-        exam: '',        // exam prefilled here
-        subject: '',     // subject prefilled here
-        topic: '',       // topic prefilled here
-        difficulty: 'easy',
+        exam: '',
+        subject: '',
+        topic: '',
         duration: 30,
-        totalMarks: 0,   // totalMarks prefilled here
+        totalMarks: 0,
         questions: [],
+        isPaid: false,
+        price: 0,
+        instituteId: '',
     });
 
     const [questionBank, setQuestionBank] = useState([]); // To store and merge selected + filtered questions
 
     useEffect(() => {
         dispatch(fetchTestById(id));
-        dispatch(getAllExams());
-        dispatch(getAllTopics());
     }, [dispatch, id]);
+
+    // Fetch exams on load
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, instituteId }));
+        if (instituteId) {
+            dispatch(getExamsByInstituteId(instituteId));
+        }
+    }, [dispatch, instituteId]);
+
+    useEffect(() => {
+        if (formData.exam) {
+            dispatch(getSubjectsByExamId(formData.exam));
+        }
+    }, [formData.exam, dispatch]);
+
+    useEffect(() => {
+        if (formData.subject) {
+            dispatch(getTopicsBySubjectId(formData.subject));
+        }
+    }, [formData.subject, dispatch]);
+
+    // Fetch questions when filter changes
+    useEffect(() => {
+        if (formData.exam && formData.subject && formData.topic) {
+            dispatch(fetchQuestionsByFilter({
+                exam: formData.exam,
+                subject: formData.subject,
+                topic: formData.topic
+            }));
+        }
+    }, [formData.exam, formData.subject, formData.topic, dispatch]);
+
 
     useEffect(() => {
         if (currentTest) {
@@ -54,8 +98,9 @@ const EditTestForm = () => {
                 exam: currentTest.exam._id || '',            // prefill exam from currentTest
                 subject: currentTest.subject._id || '',      // prefill subject from currentTest
                 topic: currentTest.topic._id || '',          // prefill topic from currentTest
-                difficulty: currentTest.difficulty || 'easy',
                 duration: currentTest.duration || 30,
+                isPaid: currentTest.isPaid || false,
+                price: currentTest.price || 0,
                 totalMarks: currentTest.totalMarks || 0, // prefill totalMarks from currentTest
                 questions: currentTest.questions?.map(q => q._id || q) || [],
             });
@@ -75,21 +120,6 @@ const EditTestForm = () => {
         }
     }, [currentTest]);
 
-    useEffect(() => {
-        if (formData.exam) {
-            dispatch(getAllSubjects(formData.exam));
-        }
-    }, [formData.exam, dispatch]);
-
-    useEffect(() => {
-        if (formData.exam && formData.subject && formData.topic) {
-            dispatch(fetchQuestionsByFilter({
-                examId: formData.exam,
-                subjectId: formData.subject,
-                topicId: formData.topic,
-            }));
-        }
-    }, [formData.exam, formData.subject, formData.topic, dispatch]);
 
     // Merge fetched questions with selected questions
     useEffect(() => {
@@ -224,17 +254,6 @@ const EditTestForm = () => {
 
                     <Row>
                         <Col md={4}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Difficulty</Form.Label>
-                                <Form.Select name="difficulty" value={formData.difficulty} onChange={handleChange}>
-                                    <option value="easy">Easy</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="hard">Hard</option>
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
-
-                        <Col md={4}>
 
                             <Form.Group className="mb-3">
                                 <Form.Label>Total Marks</Form.Label>
@@ -261,6 +280,35 @@ const EditTestForm = () => {
                             </Form.Group>
                         </Col>
                     </Row>
+
+                    <Row>
+                        <Col md={4}>
+                            <Form.Group className="mb-3">
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Is Paid?"
+                                    name="isPaid"
+                                    checked={formData.isPaid}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                        </Col>
+                        {formData.isPaid && (
+                            <Col md={4}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Price (₹)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        name="price"
+                                        value={formData.price}
+                                        onChange={handleChange}
+                                        min="0"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        )}
+                    </Row>
+
 
                     <Form.Group className="mb-3">
                         <Form.Label>Selected Questions ( if you want to remove question uncheck it. )</Form.Label>

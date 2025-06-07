@@ -4,20 +4,18 @@ import { toast } from 'react-toastify';
 import { Form, Button, Container, Row, Col, Spinner } from 'react-bootstrap';
 
 import {
-    getAllExams,
+    getExamsByInstituteId,
 } from '../redux/slices/examSlice';
 import {
-    getAllSubjects,
+    getSubjectsByExamId,
 } from '../redux/slices/subjectSlice';
 import {
-    getAllTopics,
+    getTopicsBySubjectId,
 } from '../redux/slices/topicSlice';
 import {
     fetchQuestionsByFilter,
 } from '../redux/slices/questionSlice';
-
 import { createTest, clearTestState } from '../redux/slices/testSlice';
-import { Link } from 'react-router-dom';
 
 const CreateTestForm = () => {
     
@@ -27,42 +25,56 @@ const CreateTestForm = () => {
     const { subjects } = useSelector((state) => state.subject);
     const { topics } = useSelector((state) => state.topics);
     const { questions } = useSelector((state) => state.questions);
+    const { user } = useSelector((state) => state.auth.user);
     const { loading, error, successMessage } = useSelector((state) => state.test);
+
+    const instituteId = user?.instituteId;
 
     const [formData, setFormData] = useState({
         title: '',
         exam: '',
         subject: '',
         topic: '',
-        difficulty: 'easy',
         duration: 30,
-        totalMarks: 0,  // Initialize as 0
+        totalMarks: 0,
         questions: [],
+        isPaid: false,
+        price: 0,
+        instituteId: '',
     });
 
-    // Fetch initial data
+    // Fetch exams on load
     useEffect(() => {
-        dispatch(getAllExams());
-        dispatch(getAllTopics());
-    }, [dispatch]);
+        setFormData(prev => ({ ...prev, instituteId }));
+        if (instituteId) {
+            dispatch(getExamsByInstituteId(instituteId));
+        }
+    }, [dispatch, instituteId]);
 
     useEffect(() => {
         if (formData.exam) {
-            dispatch(getAllSubjects(formData.exam));
+            dispatch(getSubjectsByExamId(formData.exam));
         }
     }, [formData.exam, dispatch]);
 
     useEffect(() => {
+        if (formData.subject) {
+            dispatch(getTopicsBySubjectId(formData.subject));
+        }
+    }, [formData.subject, dispatch]);
+
+    // Fetch questions when filter changes
+    useEffect(() => {
         if (formData.exam && formData.subject && formData.topic) {
             dispatch(fetchQuestionsByFilter({
-                examId: formData.exam,
-                subjectId: formData.subject,
-                topicId: formData.topic,
+                exam: formData.exam,
+                subject: formData.subject,
+                topic: formData.topic
             }));
         }
     }, [formData.exam, formData.subject, formData.topic, dispatch]);
 
-    // Toast handling
+
     useEffect(() => {
         if (successMessage) {
             toast.success(successMessage);
@@ -72,58 +84,76 @@ const CreateTestForm = () => {
                 exam: '',
                 subject: '',
                 topic: '',
-                difficulty: 'easy',
+                // difficulty removed
                 duration: 30,
                 totalMarks: 0,
                 questions: [],
+                isPaid: false,
+                price: 0,
+                instituteId,
             });
         }
         if (error) {
             toast.error(error);
             dispatch(clearTestState());
         }
-    }, [successMessage, error, dispatch]);
+    }, [successMessage, error, dispatch, instituteId]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
 
-        if (name === 'exam' || name === 'subject' || name === 'topic') {
-            setFormData((prev) => ({
+        if (['exam', 'subject', 'topic'].includes(name)) {
+            setFormData(prev => ({
                 ...prev,
                 [name]: value,
                 questions: [],
-                totalMarks: 0, // Reset total marks when filters change
+                totalMarks: 0,
+            }));
+        } else if (type === 'checkbox') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: checked,
             }));
         } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            setFormData(prev => ({
+                ...prev,
+                [name]: value,
+            }));
         }
     };
 
-    // Update questions and totalMarks on question checkbox toggle
     const handleQuestionToggle = (id) => {
-        setFormData((prev) => {
+        setFormData(prev => {
             let updatedQuestions;
             if (prev.questions.includes(id)) {
-                updatedQuestions = prev.questions.filter((q) => q !== id);
+                updatedQuestions = prev.questions.filter(q => q !== id);
             } else {
                 updatedQuestions = [...prev.questions, id];
             }
+
             return {
                 ...prev,
                 questions: updatedQuestions,
-                totalMarks: updatedQuestions.length,  // 1 mark per question
+                totalMarks: updatedQuestions.length,
             };
         });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
         if (!formData.exam || !formData.subject || !formData.topic) {
             return toast.error('Exam, Subject, and Topic are required!');
         }
+
         if (formData.questions.length === 0) {
             return toast.error('Please select at least one question!');
         }
+
+        if (formData.isPaid && (!formData.price || formData.price <= 0)) {
+            return toast.error('Price is required for paid tests!');
+        }
+
         dispatch(createTest(formData));
     };
 
@@ -134,8 +164,7 @@ const CreateTestForm = () => {
             </div>
 
             <div className='card-body'>
-
-                <Form onSubmit={handleSubmit} className='test_form'>
+                <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Title</Form.Label>
                         <Form.Control
@@ -184,17 +213,9 @@ const CreateTestForm = () => {
                     </Row>
 
                     <Row>
-                        <Col md={4}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Difficulty</Form.Label>
-                                <Form.Select name="difficulty" value={formData.difficulty} onChange={handleChange}>
-                                    <option value="easy">Easy</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="hard">Hard</option>
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
+                        {/* Difficulty field removed */}
+
+                        <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Duration (minutes)</Form.Label>
                                 <Form.Control
@@ -205,7 +226,7 @@ const CreateTestForm = () => {
                                 />
                             </Form.Group>
                         </Col>
-                        <Col md={4}>
+                        <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Total Marks</Form.Label>
                                 <Form.Control
@@ -218,7 +239,34 @@ const CreateTestForm = () => {
                         </Col>
                     </Row>
 
-                    {/* Questions List */}
+                    <Row>
+                        <Col md={4}>
+                            <Form.Group className="mb-3">
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Is Paid?"
+                                    name="isPaid"
+                                    checked={formData.isPaid}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                        </Col>
+                        {formData.isPaid && (
+                            <Col md={4}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Price (₹)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        name="price"
+                                        value={formData.price}
+                                        onChange={handleChange}
+                                        min="0"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        )}
+                    </Row>
+
                     <Form.Group className="mb-3">
                         <Form.Label>Select Questions</Form.Label>
                         {questions?.length === 0 ? (
@@ -243,9 +291,7 @@ const CreateTestForm = () => {
                         {loading ? <Spinner animation="border" size="sm" /> : 'Create Test'}
                     </Button>
                 </Form>
-
             </div>
-
         </div>
     );
 };

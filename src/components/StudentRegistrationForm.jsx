@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import api from '../utils/axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-
 const StudentRegistrationForm = () => {
-
     const navigate = useNavigate();
+    const { user } = useSelector((state) => state.auth.user);
+    const instituteId = user?.instituteId;
+
+
     const [formData, setFormData] = useState({
         name: '',
         fatherName: '',
@@ -20,6 +23,7 @@ const StudentRegistrationForm = () => {
         dob: '',
         gender: '',
         profileImage: null,
+        instituteId: user?.instituteId || '',
     });
 
     const handleChange = (e) => {
@@ -30,7 +34,6 @@ const StudentRegistrationForm = () => {
             setFormData({ ...formData, [name]: value });
         }
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -46,16 +49,12 @@ const StudentRegistrationForm = () => {
             toast.success('Student registered successfully!');
             console.log(res.data);
 
-            // Navigate to students page after success
             navigate('/students');
         } catch (err) {
             console.error(err);
             toast.error(err.response?.data?.message || 'Registration failed');
-            // No navigation on error
         }
     };
-
-
 
     return (
         <div className="col-lg-12">
@@ -138,6 +137,7 @@ const StudentRegistrationForm = () => {
                                 required
                             />
                         </div>
+
 
                         <div className="col-12 text-center mt-5">
                             <button className="btn btn-primary-600 text-center" type="submit">
