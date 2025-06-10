@@ -54,7 +54,7 @@ const StudentUpdateForm = () => {
                 }
             }
 
-            await api.put(`/update-student/${id}`, data);
+            await api.put(`/update/student/${id}`, data);
             toast.success('Student updated successfully!');
             navigate('/students');
         } catch (err) {

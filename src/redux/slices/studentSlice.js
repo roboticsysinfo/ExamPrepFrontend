@@ -81,6 +81,20 @@ export const getStudentsByInstituteId = createAsyncThunk(
     }
 );
 
+// 🔹 Get Leaderboard (Paginated)
+export const getLeaderboard = createAsyncThunk(
+    'students/getLeaderboard',
+    async ({ page = 1, limit = 20 }, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/get-leaderboard-data?page=${page}&limit=${limit}`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || 'Something went wrong');
+        }
+    }
+);
+
+
 const studentSlice = createSlice({
     name: 'student',
     initialState: {
@@ -90,6 +104,17 @@ const studentSlice = createSlice({
         loading: false,
         error: null,
         successMessage: null,
+        leaderboard: {
+            data: [],
+            pagination: {
+                total: 0,
+                page: 1,
+                limit: 20,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPrevPage: false
+            }
+        },
     },
     reducers: {
         clearStudentMessages: (state) => {
@@ -182,6 +207,29 @@ const studentSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
+            // 🔸 Get Leaderboard
+            .addCase(getLeaderboard.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getLeaderboard.fulfilled, (state, action) => {
+                state.loading = false;
+                // action.payload is already the data object
+                state.leaderboard = action.payload;
+            })
+
+            // .addCase(getLeaderboard.fulfilled, (state, action) => {
+            //     state.loading = false;
+            //     // directly use action.payload.students and action.payload.pagination
+            //     state.leaderboard = action.payload;
+            //     state.leaderboard.pagination = action.payload.pagination;
+            // })
+            .addCase(getLeaderboard.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
     },
 });
 

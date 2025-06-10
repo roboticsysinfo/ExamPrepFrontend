@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import studentReducer from "../redux/slices/studentSlice"
+import studentReducer from "../redux/slices/studentSlice";
 import examReducer from "../redux/slices/examSlice";
 import subjectReducer from "../redux/slices/subjectSlice";
 import topicReducer from "../redux/slices/topicSlice";
@@ -11,12 +11,14 @@ import instituteReducer from "../redux/slices/instituteSlice";
 import userReducer from "../redux/slices/userSlice";
 import admissionQueryReducer from "../redux/slices/admissionQuerySlice";
 import previousQuestionPaperReducer from "../redux/slices/previousQuestionPaperSlice";
-import practiceTestsReducer from "../redux/slices/practiceTestSlice"
-
+import practiceTestsReducer from "../redux/slices/practiceTestSlice";
+import doubtReducer from "../redux/slices/doubtSlice";
+import notificationReducer from "../redux/slices/notificationSlice";
 
 const store = configureStore({
 
   reducer: {
+
     student: studentReducer,
     exam: examReducer,
     subject: subjectReducer,
@@ -29,7 +31,10 @@ const store = configureStore({
     user: userReducer,
     admissionQuery: admissionQueryReducer,
     previousQuestionPaper: previousQuestionPaperReducer,
-    practiceTests: practiceTestsReducer
+    practiceTests: practiceTestsReducer,
+    doubt: doubtReducer,
+    notifications: notificationReducer,
+
   },
 
 });

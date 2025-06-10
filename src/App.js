@@ -42,6 +42,8 @@ import UploadQuestionPaper from "./pages/UploadQuestionPaper";
 import PreviousQuestionPapersListPage from "./pages/PreviousQuestionPapersListPage";
 import PracticeTestFormPage from "./pages/PracticeTestFormPage";
 import PracticeTestsListPage from "./pages/PracticeTestsListPage";
+import StudentsDoubtsPage from "./pages/StudentsDoubtsPage";
+import StudentLeaderboardPage from "./pages/StudentLeaderboardPage";
 
 function App() {
 
@@ -326,6 +328,18 @@ function App() {
           }
         />
 
+        <Route
+          path="/students-doubts"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="students-doubts">
+                <StudentsDoubtsPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
+
 
         {/* Super Admin Routes */}
         <Route
@@ -395,6 +409,18 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/leaderboard"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="leaderboard">
+                <StudentLeaderboardPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/role-access"
           element={
