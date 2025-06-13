@@ -36,7 +36,7 @@ export const fetchPracticeTestById = createAsyncThunk(
   'practiceTests/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/practice-tests/${id}`);
+      const response = await api.get(`/get/practiceTestById/${id}`);
       return response.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -62,7 +62,7 @@ export const updatePracticeTest = createAsyncThunk(
   'practiceTests/update',
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/practice-tests/update/${id}`, updatedData);
+      const response = await api.put(`/update-practice-test/${id}`, updatedData);
       return response.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);

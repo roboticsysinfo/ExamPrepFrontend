@@ -14,10 +14,12 @@ const MasterLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth.user);
 
-  const { doubtNotifications } = useSelector((state) => state.notifications);
-  const unreadDoubtCount = doubtNotifications?.filter(n => !n.isRead)?.length || 0;
-
+  const { doubtNotifications = [] } = useSelector((state) => state.notifications);
+  // Calculate unread count directly
+  const unreadCount = doubtNotifications.filter((n) => !n.isRead).length;
   const instituteId = user?.instituteId
+
+  console.log("unreadCount", unreadCount)
 
 
   let [sidebarActive, seSidebarActive] = useState(false);
@@ -440,37 +442,33 @@ const MasterLayout = ({ children }) => {
 
 
 
-            {/* Role & Access Dropdown */}
-            <li className='dropdown'>
-              <Link to='#'>
-                <i className='ri-user-settings-line' />
-                <span>Role &amp; Access</span>
-              </Link>
-              <ul className='sidebar-submenu'>
-                <li>
-                  <NavLink
-                    to='/role-access'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
-                    Role &amp; Access
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/assign-role'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
-                    Assign Role
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+            {user.role !== 'teacher' && (
+
+              <li className='dropdown'>
+                <Link to='#'>
+                  <i className='ri-user-settings-line' />
+                  <span>Role &amp; Access</span>
+                </Link>
+                <ul className='sidebar-submenu'>
+                  <li>
+                    <NavLink
+                      to='/role-access'
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
+                      Role &amp; Access
+                    </NavLink>
+                  </li>
+
+                </ul>
+              </li>
+
+            )}
+
+
+
 
 
 
@@ -526,8 +524,7 @@ const MasterLayout = ({ children }) => {
                   <Link
                     to="/notification"
                     className='has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center position-relative'
-                    type='button'
-                    data-bs-toggle='dropdown'
+                    
                   >
                     <Icon
                       icon='iconoir:bell'
@@ -535,9 +532,9 @@ const MasterLayout = ({ children }) => {
                     />
 
                     {/* 🔴 Badge for unread doubt notifications */}
-                    {unreadDoubtCount > 0 && (
+                    {unreadCount > 0 && (
                       <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '10px' }}>
-                        {unreadDoubtCount}
+                        {unreadCount}
                       </span>
                     )}
                   </Link>

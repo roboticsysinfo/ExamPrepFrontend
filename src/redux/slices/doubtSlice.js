@@ -41,18 +41,6 @@ export const getDoubtsByInstitute = createAsyncThunk(
   }
 );
 
-// 🔹 Answer a doubt (admin)
-// export const answerDoubt = createAsyncThunk(
-//   'doubt/answerDoubt',
-//   async ({ doubtId, answer, answeredBy }, { rejectWithValue }) => {
-//     try {
-//       const res = await api.put(`/answer/doubts/${doubtId}`, { answer, answeredBy });
-//       return res.data;
-//     } catch (err) {
-//       return rejectWithValue(err.response?.data || { message: 'Answer doubt failed' });
-//     }
-//   }
-// );
 
 export const answerDoubt = createAsyncThunk(
   'doubts/answerDoubt',

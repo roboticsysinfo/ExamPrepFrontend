@@ -14,11 +14,8 @@ const RoleBasedRoute = ({ children, allowedRoles, pageKey }) => {
   }
 
   // Teacher can only access assigned pages
-  if (user?.role === 'teacher') {
-    const allowedPages = user?.assignedPages || [];
-    if (!allowedPages.includes(pageKey)) {
+  if (!user?.role === "teacher") {
       return <Navigate to="/access-denied" />;
-    }
   }
 
   return children;

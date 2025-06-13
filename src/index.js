@@ -5,7 +5,7 @@ import "jsvectormap/dist/css/jsvectormap.css";
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-modal-video/css/modal-video.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import App from "./App";
 import "./app.css"
 import reportWebVitals from "./reportWebVitals";

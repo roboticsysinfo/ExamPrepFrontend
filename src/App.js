@@ -44,6 +44,7 @@ import PracticeTestFormPage from "./pages/PracticeTestFormPage";
 import PracticeTestsListPage from "./pages/PracticeTestsListPage";
 import StudentsDoubtsPage from "./pages/StudentsDoubtsPage";
 import StudentLeaderboardPage from "./pages/StudentLeaderboardPage";
+import EditPracticeTestPage from "./pages/EditPracticeTestPage";
 
 function App() {
 
@@ -282,6 +283,16 @@ function App() {
           }
         />
 
+        <Route
+          path="/practice-test/edit/:id"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin']} pageKey="edit-test">
+                <EditPracticeTestPage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
 
 
         <Route

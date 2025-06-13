@@ -10,7 +10,7 @@ const NotificationLayer = () => {
     const dispatch = useDispatch();
     const { doubtNotifications, loading } = useSelector(state => state.notifications);
     const { user } = useSelector(state => state.auth.user);
-    const instituteId = user?.instituteId
+    const instituteId = user?.instituteId;
 
     useEffect(() => {
         if (instituteId) {
@@ -22,10 +22,13 @@ const NotificationLayer = () => {
         dispatch(markOneNotificationAsRead(notificationId));
     };
 
+
     return (
         
         <div className="card h-100 radius-12 overflow-hidden">
+
             <div className="card-body p-32">
+
                 <h5 className="fw-bold mb-24">Notifications</h5>
                 {loading && <p>Loading notifications...</p>}
                 {!loading && doubtNotifications.length === 0 && <p>No notifications available.</p>}
@@ -60,8 +63,11 @@ const NotificationLayer = () => {
                         </div>
                     ))}
                 </div>
+
             </div>
+
         </div>
+        
     );
 };
 

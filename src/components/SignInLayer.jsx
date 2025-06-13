@@ -74,11 +74,11 @@ const SignInLayer = () => {
               </div>
             </div>
 
-            <div className='d-flex justify-content-between gap-2'>
+            {/* <div className='d-flex justify-content-between gap-2'>
               <Link to='#' className='text-primary-600 fw-medium'>
                 Forgot Password?
               </Link>
-            </div>
+            </div> */}
             <button
               type='submit'
               className='btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32'

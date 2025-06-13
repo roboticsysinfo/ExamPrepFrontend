@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../utils/axios'; 
+import api from '../../utils/axios';
 
 
 // Initial state
@@ -91,15 +91,19 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async (id, thunkAP
 });
 
 
-// 🧾 Assign role
-export const assignRole = createAsyncThunk('user/assignRole', async ({ id, role }, thunkAPI) => {
-  try {
-    const res = await api.put(`/auth/user/assign-role/${id}`, { role });
-    return res.data.user;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data.message || 'Role assignment failed');
+// 🏫 Get users by instituteId
+export const getUsersByInstituteId = createAsyncThunk(
+  'user/getUsersByInstituteId',
+  async (instituteId, thunkAPI) => {
+    try {
+      const res = await api.get(`/auth/users/by-institute/${instituteId}`);
+      return res.data.users;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message || 'Failed to fetch institute users');
+    }
   }
-});
+);
+
 
 
 // 📦 userSlice
@@ -150,10 +154,18 @@ const userSlice = createSlice({
         state.users = state.users.filter((u) => u._id !== action.payload);
       })
 
-      // Assign Role
-      .addCase(assignRole.fulfilled, (state, action) => {
-        const index = state.users.findIndex((u) => u._id === action.payload._id);
-        if (index !== -1) state.users[index].role = action.payload.role;
+      // Get users by instituteId
+      .addCase(getUsersByInstituteId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUsersByInstituteId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(getUsersByInstituteId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
 
       // Handle common errors
