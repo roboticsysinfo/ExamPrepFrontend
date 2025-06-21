@@ -35,8 +35,8 @@ const SignInLayer = () => {
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
         <div className='max-w-464-px mx-auto w-100'>
           <div>
-            <Link to='/' className='mb-40 max-w-290-px'>
-              <img src='assets/images/logo.png' alt='' />
+            <Link to='/' className='mb-20  max-w-290-px'>
+              <img src='assets/images/logo.png' alt='' style={{width: "100%", height: 100}} />
             </Link>
             <h4 className='mb-12'>Sign In to your Account</h4>
             <p className='mb-32 text-secondary-light text-lg'>

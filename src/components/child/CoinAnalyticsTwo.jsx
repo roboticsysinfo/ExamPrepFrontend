@@ -24,7 +24,7 @@ const CoinAnalyticsTwo = () => {
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-neutral-200 px-8 py-8 radius-4 mb-16">
                         <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
                             <img
-                                src="assets/images/currency/crypto-img1.png"
+                                src="/assets/images/currency/crypto-img1.png"
                                 alt=""
                                 className="w-36-px h-36-px rounded-circle flex-shrink-0"
                             />
@@ -47,7 +47,7 @@ const CoinAnalyticsTwo = () => {
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-neutral-200 px-8 py-8 radius-4 mb-16">
                         <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
                             <img
-                                src="assets/images/currency/crypto-img2.png"
+                                src="/assets/images/currency/crypto-img2.png"
                                 alt=""
                                 className="w-36-px h-36-px rounded-circle flex-shrink-0"
                             />
@@ -68,7 +68,7 @@ const CoinAnalyticsTwo = () => {
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-neutral-200 px-8 py-8 radius-4 mb-16">
                         <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
                             <img
-                                src="assets/images/currency/crypto-img3.png"
+                                src="/assets/images/currency/crypto-img3.png"
                                 alt=""
                                 className="w-36-px h-36-px rounded-circle flex-shrink-0"
                             />
@@ -91,7 +91,7 @@ const CoinAnalyticsTwo = () => {
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-neutral-200 px-8 py-8 radius-4 mb-16">
                         <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
                             <img
-                                src="assets/images/currency/crypto-img4.png"
+                                src="/assets/images/currency/crypto-img4.png"
                                 alt=""
                                 className="w-36-px h-36-px rounded-circle flex-shrink-0"
                             />
@@ -114,7 +114,7 @@ const CoinAnalyticsTwo = () => {
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-neutral-200 px-8 py-8 radius-4 mb-16">
                         <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
                             <img
-                                src="assets/images/currency/crypto-img5.png"
+                                src="/assets/images/currency/crypto-img5.png"
                                 alt=""
                                 className="w-36-px h-36-px rounded-circle flex-shrink-0"
                             />
@@ -135,7 +135,7 @@ const CoinAnalyticsTwo = () => {
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-neutral-200 px-8 py-4 radius-4">
                         <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
                             <img
-                                src="assets/images/currency/crypto-img1.png"
+                                src="/assets/images/currency/crypto-img1.png"
                                 alt=""
                                 className="w-36-px h-36-px rounded-circle flex-shrink-0"
                             />

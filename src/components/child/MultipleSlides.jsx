@@ -40,35 +40,35 @@ const MultipleSlides = () => {
                     <Slider {...settings}>
                         <div className=" mb-24">
                             <img
-                                src="assets/images/carousel/mutiple-carousel-img1.png"
+                                src="/assets/images/carousel/mutiple-carousel-img1.png"
                                 className="w-100 h-100 object-fit-cover"
                                 alt=""
                             />
                         </div>
                         <div className=" mb-24">
                             <img
-                                src="assets/images/carousel/mutiple-carousel-img2.png"
+                                src="/assets/images/carousel/mutiple-carousel-img2.png"
                                 className="w-100 h-100 object-fit-cover"
                                 alt=""
                             />
                         </div>
                         <div className=" mb-24">
                             <img
-                                src="assets/images/carousel/mutiple-carousel-img3.png"
+                                src="/assets/images/carousel/mutiple-carousel-img3.png"
                                 className="w-100 h-100 object-fit-cover"
                                 alt=""
                             />
                         </div>
                         <div className=" mb-24">
                             <img
-                                src="assets/images/carousel/mutiple-carousel-img4.png"
+                                src="/assets/images/carousel/mutiple-carousel-img4.png"
                                 className="w-100 h-100 object-fit-cover"
                                 alt=""
                             />
                         </div>
                         <div className=" mb-24">
                             <img
-                                src="assets/images/carousel/mutiple-carousel-img2.png"
+                                src="/assets/images/carousel/mutiple-carousel-img2.png"
                                 className="w-100 h-100 object-fit-cover"
                                 alt=""
                             />

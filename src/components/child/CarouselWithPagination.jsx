@@ -21,7 +21,7 @@ const CarouselWithPagination = () => {
                     <Slider {...settings}>
                         <div className="gradient-overlay bottom-0 start-0 h-100">
                             <img
-                                src="assets/images/carousel/carousel-img3.png"
+                                src="/assets/images/carousel/carousel-img3.png"
                                 alt=""
                                 className="w-100 h-100 object-fit-cover"
                             />
@@ -37,7 +37,7 @@ const CarouselWithPagination = () => {
                         </div>
                         <div className="gradient-overlay bottom-0 start-0 h-100">
                             <img
-                                src="assets/images/carousel/carousel-img4.png"
+                                src="/assets/images/carousel/carousel-img4.png"
                                 alt=""
                                 className="w-100 h-100 object-fit-cover"
                             />
@@ -53,7 +53,7 @@ const CarouselWithPagination = () => {
                         </div>
                         <div className="gradient-overlay bottom-0 start-0 h-100">
                             <img
-                                src="assets/images/carousel/carousel-img1.png"
+                                src="/assets/images/carousel/carousel-img1.png"
                                 alt=""
                                 className="w-100 h-100 object-fit-cover"
                             />
@@ -69,7 +69,7 @@ const CarouselWithPagination = () => {
                         </div>
                         <div className="gradient-overlay bottom-0 start-0 h-100">
                             <img
-                                src="assets/images/carousel/carousel-img2.png"
+                                src="/assets/images/carousel/carousel-img2.png"
                                 alt=""
                                 className="w-100 h-100 object-fit-cover"
                             />

@@ -6,14 +6,14 @@ const BannerInnerOne = () => {
         <div className="col-12">
             <div className="nft-promo-card card radius-12 overflow-hidden position-relative z-1">
                 <img
-                    src="assets/images/nft/nft-gradient-bg.png"
+                    src="/assets/images/nft/nft-gradient-bg.png"
                     className="position-absolute start-0 top-0 w-100 h-100 z-n1"
                     alt=""
                 />
                 <div className="nft-promo-card__inner d-flex align-items-center">
                     <div className="nft-promo-card__thumb w-100">
                         <img
-                            src="assets/images/nft/nf-card-img.png"
+                            src="/assets/images/nft/nf-card-img.png"
                             alt=""
                             className="w-100 h-100 object-fit-cover"
                         />

@@ -14,7 +14,7 @@ const DefaultVideo = () => {
                 <div className="card-body p-24">
                     <div className="position-relative">
                         <img
-                            src="assets/images/videos/video-img1.png"
+                            src="/assets/images/videos/video-img1.png"
                             className="w-100 h-100 object-fit-cover radius-8"
                             alt=""
                         />

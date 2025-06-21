@@ -57,9 +57,7 @@ export default function UploadPreviousQuestionPaperForm() {
     }
 
     const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
-    console.log("Selected File:", file);
-    console.log("File Size in bytes:", file?.size);
-    console.log("Max Allowed Size:", maxSizeInBytes);
+
 
     if (file.size > maxSizeInBytes) {
       toast.error(`File is too large. (${(file.size / 1024).toFixed(2)} KB). Must be <= 1 MB.`);

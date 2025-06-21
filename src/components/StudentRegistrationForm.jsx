@@ -47,7 +47,6 @@ const StudentRegistrationForm = () => {
             const res = await api.post('/student/register', data);
 
             toast.success('Student registered successfully!');
-            console.log(res.data);
 
             navigate('/students');
         } catch (err) {

@@ -38,8 +38,6 @@ const EditTestForm = () => {
 
     const instituteId = user?.instituteId
 
-    console.log("current test", currentTest)
-
     const [formData, setFormData] = useState({
         title: '',
         exam: '',

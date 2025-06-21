@@ -15,10 +15,6 @@ const StudentsList = () => {
     const { user } = useSelector((state) => state.auth.user);
     const instituteId = user?.instituteId;
 
-    console.log("user", user)
-    console.log("instituteId", instituteId)
-    console.log("instituteStudents", instituteStudents)
-
     useEffect(() => {
         if (instituteId) {
             dispatch(getStudentsByInstituteId(instituteId));

@@ -22,7 +22,7 @@ const NoticeBoardOne = () => {
                     </div>
                     <div className="d-flex align-items-start gap-2 mb-20">
                         <img
-                            src="assets/images/notice/board-img1.png"
+                            src="/assets/images/notice/board-img1.png"
                             alt=""
                             className="flex-shrink-0 w-40-px h-40-px me-12 radius-8 me-12"
                         />
@@ -39,7 +39,7 @@ const NoticeBoardOne = () => {
                     </div>
                     <div className="d-flex align-items-start gap-2 mb-20">
                         <img
-                            src="assets/images/notice/board-img2.png"
+                            src="/assets/images/notice/board-img2.png"
                             alt=""
                             className="flex-shrink-0 w-40-px h-40-px me-12 radius-8 me-12"
                         />
@@ -57,7 +57,7 @@ const NoticeBoardOne = () => {
                     </div>
                     <div className="d-flex align-items-start gap-2">
                         <img
-                            src="assets/images/notice/board-img3.png"
+                            src="/assets/images/notice/board-img3.png"
                             alt=""
                             className="flex-shrink-0 w-40-px h-40-px me-12 radius-8 me-12"
                         />

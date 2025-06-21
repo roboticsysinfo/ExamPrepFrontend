@@ -22,7 +22,6 @@ const UsersList = () => {
         }
     }, [users]);
 
-    console.log("users", users)
 
     return (
         <div className="card basic-data-table">

@@ -8,7 +8,7 @@ const RazorPay = () => {
                     <div className="d-flex align-items-center gap-10">
                         <span className="w-36-px h-36-px bg-base rounded-circle d-flex justify-content-center align-items-center">
                             <img
-                                src="assets/images/payment/payment-gateway2.png"
+                                src="/assets/images/payment/payment-gateway2.png"
                                 alt="image_icon"
                             />
                         </span>

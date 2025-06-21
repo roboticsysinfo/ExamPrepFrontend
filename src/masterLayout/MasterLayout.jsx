@@ -19,8 +19,6 @@ const MasterLayout = ({ children }) => {
   const unreadCount = doubtNotifications.filter((n) => !n.isRead).length;
   const instituteId = user?.instituteId
 
-  console.log("unreadCount", unreadCount)
-
 
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);

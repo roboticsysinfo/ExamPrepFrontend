@@ -34,7 +34,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-items-img1.png"
+                                                    src="/assets/images/nft/nft-items-img1.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -53,7 +53,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-offer-img1.png"
+                                                    src="/assets/images/nft/nft-offer-img1.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -86,7 +86,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-items-img2.png"
+                                                    src="/assets/images/nft/nft-items-img2.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -105,7 +105,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-offer-img2.png"
+                                                    src="/assets/images/nft/nft-offer-img2.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -138,7 +138,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-items-img3.png"
+                                                    src="/assets/images/nft/nft-items-img3.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -157,7 +157,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-offer-img3.png"
+                                                    src="/assets/images/nft/nft-offer-img3.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -190,7 +190,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-items-img4.png"
+                                                    src="/assets/images/nft/nft-items-img4.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -209,7 +209,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-offer-img4.png"
+                                                    src="/assets/images/nft/nft-offer-img4.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -242,7 +242,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-items-img5.png"
+                                                    src="/assets/images/nft/nft-items-img5.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -261,7 +261,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-offer-img5.png"
+                                                    src="/assets/images/nft/nft-offer-img5.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -294,7 +294,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-items-img6.png"
+                                                    src="/assets/images/nft/nft-items-img6.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -313,7 +313,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-offer-img6.png"
+                                                    src="/assets/images/nft/nft-offer-img6.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -346,7 +346,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-items-img2.png"
+                                                    src="/assets/images/nft/nft-items-img2.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />
@@ -365,7 +365,7 @@ const RecentBidOne = () => {
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <img
-                                                    src="assets/images/nft/nft-offer-img7.png"
+                                                    src="/assets/images/nft/nft-offer-img7.png"
                                                     alt=""
                                                     className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                                                 />

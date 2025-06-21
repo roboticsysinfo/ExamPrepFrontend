@@ -23,7 +23,7 @@ const FeaturedCreatorsOne = () => {
                     <div className="d-flex align-items-center justify-content-between gap-8 flex-wrap">
                         <div className="d-flex align-items-center">
                             <img
-                                src="assets/images/nft/nft-items-img1.png"
+                                src="/assets/images/nft/nft-items-img1.png"
                                 alt=""
                                 className="flex-shrink-0 me-12 w-40-px h-40-px rounded-circle me-12"
                             />
@@ -47,7 +47,7 @@ const FeaturedCreatorsOne = () => {
                                 <div className="nft-card bg-base radius-16 overflow-hidden shadow-4">
                                     <div className="radius-16 overflow-hidden">
                                         <img
-                                            src="assets/images/nft/featured-creator1.png"
+                                            src="/assets/images/nft/featured-creator1.png"
                                             alt=""
                                             className="w-100 h-100 object-fit-cover"
                                         />
@@ -58,7 +58,7 @@ const FeaturedCreatorsOne = () => {
                                         </h6>
                                         <div className="d-flex align-items-center gap-8">
                                             <img
-                                                src="assets/images/nft/bitcoin.png"
+                                                src="/assets/images/nft/bitcoin.png"
                                                 className="w-28-px h-28-px rounded-circle object-fit-cover"
                                                 alt=""
                                             />
@@ -73,7 +73,7 @@ const FeaturedCreatorsOne = () => {
                                 <div className="nft-card bg-base radius-16 overflow-hidden shadow-4">
                                     <div className="radius-16 overflow-hidden">
                                         <img
-                                            src="assets/images/nft/featured-creator2.png"
+                                            src="/assets/images/nft/featured-creator2.png"
                                             alt=""
                                             className="w-100 h-100 object-fit-cover"
                                         />
@@ -84,7 +84,7 @@ const FeaturedCreatorsOne = () => {
                                         </h6>
                                         <div className="d-flex align-items-center gap-8">
                                             <img
-                                                src="assets/images/nft/bitcoin.png"
+                                                src="/assets/images/nft/bitcoin.png"
                                                 className="w-28-px h-28-px rounded-circle object-fit-cover"
                                                 alt=""
                                             />
