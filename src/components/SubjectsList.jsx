@@ -30,20 +30,37 @@ const SubjectsList = () => {
         return () => table.destroy(true);
     }, [dispatch, instituteId]);
 
+
     const handleEditClick = async (id) => {
         const result = await dispatch(getSubjectById(id));
         if (result.meta.requestStatus === 'fulfilled') {
             const { _id, name, exam } = result.payload;
-            setEditData({ id: _id, name, exam });
+            setEditData({
+                id: _id,
+                name,
+                exam: exam?._id || ''
+            });
             setShowModal(true);
         }
     };
 
-    const handleUpdate = () => {
-        dispatch(updateSubject({ id: editData.id, name: editData.name, exam: editData.exam }));
-        toast.success("Subject Update Successfully")
-        setShowModal(false);
+    const handleUpdate = async () => {
+        const result = await dispatch(updateSubject({
+            id: editData.id,
+            name: editData.name,
+            exam: editData.exam
+        }));
+
+        if (result.meta.requestStatus === 'fulfilled') {
+            toast.success("Subject updated successfully.");
+            await dispatch(getSubjectsByInstituteId(instituteId)); // ✅ Refresh subjects
+            setShowModal(false);
+        } else {
+            toast.error("Failed to update subject.");
+        }
     };
+
+
 
     const handleDelete = (id) => {
         const confirmed = window.confirm("Are you sure you want to delete this subject?");
@@ -112,6 +129,7 @@ const SubjectsList = () => {
 
             {/* 🧾 Edit Modal */}
             {showModal && (
+
                 <div className="modal d-block" tabIndex="-1" role="dialog" style={{ background: '#00000066' }}>
                     <div className="modal-dialog" role="document">
                         <div className="modal-content p-3">

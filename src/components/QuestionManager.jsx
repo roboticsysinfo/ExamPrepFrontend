@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getAllExams,
+  getExamsByInstituteId,
 } from '../redux/slices/examSlice'; // your exam slice actions
 import {
   getAllSubjects,
@@ -29,6 +30,9 @@ export default function QuestionManager() {
   const { subjects } = useSelector((state) => state.subject);
   const { topics } = useSelector((state) => state.topics);
 
+  const { user } = useSelector((state) => state.auth.user);
+  const instituteId = user?.instituteId
+
   const [selectedExam, setSelectedExam] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
@@ -44,10 +48,11 @@ export default function QuestionManager() {
     options: ['', '', '', ''],
     correctAnswerIndex: '',
     explanation: '',
+    instituteId: instituteId
   });
 
   useEffect(() => {
-    dispatch(getAllExams());
+    dispatch(getExamsByInstituteId(instituteId));
     dispatch(getAllTopics());
   }, [dispatch]);
 
@@ -73,20 +78,35 @@ export default function QuestionManager() {
     }
   }, [selectedExam, selectedSubject, selectedTopic, dispatch]);
 
-  const handleEditClick = (question) => {
+
+  const handleEditClick = async (question) => {
     setEditQuestion(question);
-    dispatch(getAllSubjects(question.exam)); // fetch subjects for exam
+
+    // 1. Wait for institute exams to be loaded (if needed)
+    if (exams.length === 0) {
+      await dispatch(getExamsByInstituteId(instituteId));
+    }
+
+    // 2. Load subjects for the selected exam
+    await dispatch(getAllSubjects(question.exam?._id || question.exam));
+
+    // 3. Wait to ensure subjects are loaded, then update subject state
+    const selectedSubjectId = question.subject?._id || question.subject;
+
+    // 4. Prefill the form with exam, subject, topic
     setEditForm({
-      exam: question.exam || '',
-      subject: question.subject || '',
-      topic: question.topic || '',
+      exam: question.exam?._id || question.exam || '',
+      subject: selectedSubjectId || '',
+      topic: question.topic?._id || question.topic || '',
       questionText: question.text || question.questionText || '',
       options: question.options || ['', '', '', ''],
       correctAnswerIndex: question.correctAnswerIndex?.toString() || '',
       explanation: question.explanation || '',
     });
+
     setShowEditModal(true);
   };
+
 
   const handleEditFormChange = (e) => {
     const { name, value } = e.target;
@@ -132,6 +152,7 @@ export default function QuestionManager() {
         options: editForm.options,
         correctAnswerIndex: parseInt(editForm.correctAnswerIndex),
         explanation: editForm.explanation,
+        instituteId: instituteId
       },
     })).then(() => {
       setShowEditModal(false);

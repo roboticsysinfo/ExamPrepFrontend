@@ -5,6 +5,7 @@ import { getAllTopics, deleteTopic, updateTopic, getTopicsByInstituteId } from '
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Modal, Button } from 'react-bootstrap';
+import { getSubjectsByInstituteId } from '../redux/slices/subjectSlice';
 
 
 const TopicsList = () => {
@@ -16,6 +17,7 @@ const TopicsList = () => {
   const { user } = useSelector((state) => state.auth.user);
   const instituteId = user?.instituteId;
 
+  console.log("subjects", subjects);
 
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [updatedTitle, setUpdatedTitle] = useState('');
@@ -26,12 +28,13 @@ const TopicsList = () => {
   // Fetch Topics on mount
   useEffect(() => {
     dispatch(getTopicsByInstituteId(instituteId));
+    dispatch(getSubjectsByInstituteId(instituteId));
   }, [dispatch]);
 
   // Open Edit Modal and prefill title and subject
   const handleEdit = (topic) => {
     setSelectedTopic(topic);
-    setUpdatedTitle(topic.title || topic.name || '');
+    setUpdatedTitle(topic.name || topic.title || '');
 
     // Preselect the subject id if available
     setSelectedSubjectId(topic.subject?._id || '');
@@ -48,7 +51,7 @@ const TopicsList = () => {
   };
 
   // Submit update with title and subject id
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (!updatedTitle.trim()) {
       alert('Title cannot be empty!');
       return;
@@ -59,16 +62,31 @@ const TopicsList = () => {
       return;
     }
 
-    dispatch(updateTopic({
-      id: selectedTopic._id,
-      updatedData: {
-        title: updatedTitle,
-        subject: selectedSubjectId  // assuming your backend accepts subject id here 
-      }
-    }));
+    try {
+      const result = await dispatch(updateTopic({
+        id: selectedTopic._id,
+        updatedData: {
+          name: updatedTitle,
+          subject: selectedSubjectId,
+          instituteId: instituteId
+        }
+      }));
 
-    handleClose();
+      if (result.meta.requestStatus === 'fulfilled') {
+        toast.success("Topic updated successfully.");
+        dispatch(getTopicsByInstituteId(instituteId)); // ✅ Refresh topics
+      } else {
+        toast.error("Failed to update topic.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    }
+
+    handleClose(); // ✅ Modal close
   };
+
+
+
 
   // Delete topic
   const handleDelete = (id) => {

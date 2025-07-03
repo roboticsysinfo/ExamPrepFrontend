@@ -44,7 +44,7 @@ export const createTopic = createAsyncThunk('topics/create', async (topicData, t
 // 🔹 Update Topic
 export const updateTopic = createAsyncThunk('topics/update', async ({ id, updatedData }, thunkAPI) => {
   try {
-    const res = await api.put(`/topics/${id}`, updatedData);
+    const res = await api.put(`/update/topic/${id}`, updatedData);
     return res.data.data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data.message || 'Failed to update topic');

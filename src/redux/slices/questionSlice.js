@@ -33,9 +33,9 @@ export const bulkCreateQuestions = createAsyncThunk(
 // Update Question
 export const updateQuestion = createAsyncThunk(
     'question/updateQuestion',
-    async ({ id, data }, { rejectWithValue }) => {
+    async ({ id, formData }, { rejectWithValue }) => {
         try {
-            const res = await api.put(`/update-question/${id}`, data);
+            const res = await api.put(`/update-question/${id}`, formData);
             return res.data.data;
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || err.message);
