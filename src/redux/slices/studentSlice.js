@@ -68,6 +68,7 @@ export const getAllStudents = createAsyncThunk(
     }
 );
 
+
 // 🔹 Get Students by Institute ID
 export const getStudentsByInstituteId = createAsyncThunk(
     'student/getByInstituteId',
@@ -80,6 +81,7 @@ export const getStudentsByInstituteId = createAsyncThunk(
         }
     }
 );
+
 
 // 🔹 Get Leaderboard (Paginated)
 export const getLeaderboard = createAsyncThunk(

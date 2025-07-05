@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 const StudentRegistrationForm = () => {
+    
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth.user);
     const instituteId = user?.instituteId;
