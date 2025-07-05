@@ -25,13 +25,18 @@ const AdmissionQuery = () => {
   console.log("admissionQueries", admissionQueries);
 
   useEffect(() => {
-    if (instituteId) {
-      dispatch(fetchQueriesByInstituteId(instituteId));
-
+    if (admissionQueries.length > 0) {
+      if ($.fn.DataTable.isDataTable('#dataTable')) {
+        $('#dataTable').DataTable().destroy();
+      }
+      setTimeout(() => {
+        $('#dataTable').DataTable({
+          pageLength: 10,
+          order: [[13, 'desc']], // Sort by Query Date (14th column, index 13)
+        });
+      }, 0);
     }
-    const table = $('#dataTable').DataTable({ pageLength: 10 });
-    return () => table.destroy(true);
-  }, [dispatch, instituteId]);
+  }, [admissionQueries]);
 
 
   // Show toast on success or error
@@ -118,52 +123,58 @@ const AdmissionQuery = () => {
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {!loading && admissionQueries.length > 0 ? (
                   admissionQueries.map((query, index) => (
                     <tr key={query._id}>
-                      <td>{index + 1}</td>
-                      <td>{query.name}</td>
+                      <td>{index + 1}</td> {/* S.No */}
                       <td>
-                        <img src={query.profileImage ? query.profileImage : "https://placehold.jp/60x60.png"} alt={query.name} width={60} height={60} />
-                      </td>
-                      <td>{query.fatherName}</td>
-                      <td>{query.motherName}</td>
-                      <td>{query.dob}</td>
-                      <td>{query.gender}</td>
-                      <td>{query.phoneNumber}</td>
-                      <td>{query.email}</td>
-                      <td>{query.state}</td>
-                      <td>{query.city}</td>
-                      <td>{query.village}</td>
-                      <td>{query.address}</td>
-                      <td>{new Date(query.createdAt).toLocaleDateString()}</td>
+                        <img
+                          src={query.profileImage || "https://placehold.jp/60x60.png"}
+                          alt={query.name}
+                          width={60}
+                          height={60}
+                        />
+                      </td> {/* Photo */}
+                      <td>{query.name}</td> {/* Name */}
+                      <td>{query.fatherName}</td> {/* Father's Name */}
+                      <td>{query.motherName}</td> {/* Mother's Name */}
+                      <td>{query.phoneNumber}</td> {/* Phone */}
+                      <td>{query.dob}</td> {/* DOB */}
+                      <td>{query.gender}</td> {/* Gender */}
+                      <td>{query.email}</td> {/* Email */}
+                      <td>{query.state}</td> {/* State */}
+                      <td>{query.city}</td> {/* City */}
+                      <td>{query.village}</td> {/* Village */}
+                      <td>{query.address}</td> {/* Address */}
+                      <td>{new Date(query.createdAt).toLocaleDateString()}</td> {/* Query Date */}
                       <td>
-
                         <button
-                          className="btn btn-sm btn-info"
+                          className="btn btn-sm btn-info me-1"
                           onClick={() => handleAddmissionQuery(query)}
                         >
                           Register
                         </button>
-
                         <button
                           className="btn btn-sm btn-danger"
                           onClick={() => handleDelete(query._id)}
                         >
                           <Icon icon="mingcute:delete-2-line" />
                         </button>
-                      </td>
+                      </td> {/* Actions */}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="10" className="text-center">
+                    <td colSpan="15" className="text-center">
                       {loading ? 'Loading...' : 'No admission queries found'}
                     </td>
                   </tr>
                 )}
               </tbody>
+
+
             </table>
           </div>
         </div>
