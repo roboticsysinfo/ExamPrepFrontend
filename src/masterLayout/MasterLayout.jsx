@@ -397,48 +397,6 @@ const MasterLayout = ({ children }) => {
 
             )}
 
-            {user.role !== 'teacher' && (
-              <li className='dropdown'>
-
-                <Link to='#'>
-                  <Icon
-                    icon='icon-park-outline:setting-two'
-                    className='menu-icon'
-                  />
-                  <span>Settings</span>
-                </Link>
-
-                <ul className='sidebar-submenu'>
-
-                  <li>
-                    <NavLink
-                      to='/notification'
-                      className={(navData) =>
-                        navData.isActive ? "active-page" : ""
-                      }
-                    >
-                      <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
-                      Notification
-                    </NavLink>
-                  </li>
-
-                  <li>
-                    <NavLink
-                      to='/theme'
-                      className={(navData) =>
-                        navData.isActive ? "active-page" : ""
-                      }
-                    >
-                      <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
-                      Theme
-                    </NavLink>
-                  </li>
-
-                </ul>
-              </li>
-            )}
-
-
 
             {user.role !== 'teacher' && (
 
