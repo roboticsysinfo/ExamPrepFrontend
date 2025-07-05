@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import { Spinner } from 'react-bootstrap';
 
 const StudentsList = () => {
-
     const dispatch = useDispatch();
     const { instituteStudents, loading, error } = useSelector((state) => state.student);
     const { user } = useSelector((state) => state.auth.user);
@@ -23,14 +22,18 @@ const StudentsList = () => {
 
     useEffect(() => {
         if (instituteStudents.length > 0) {
-            const table = $('#dataTable').DataTable({
-                pageLength: 10,
-                destroy: true, // Important to allow reinitialization
-            });
+            // Destroy existing table before initializing
+            if ($.fn.DataTable.isDataTable('#dataTable')) {
+                $('#dataTable').DataTable().destroy();
+            }
 
-            return () => {
-                table.destroy(true);
-            };
+            // Re-initialize DataTable with sorting on Join Date (column index 6)
+            setTimeout(() => {
+                $('#dataTable').DataTable({
+                    pageLength: 10,
+                    order: [[6, 'desc']], // Sort by Join Date descending
+                });
+            }, 0);
         }
     }, [instituteStudents]);
 
@@ -45,7 +48,7 @@ const StudentsList = () => {
                 .then(() => {
                     toast.success("Student deleted successfully.");
                     if (instituteId) {
-                        dispatch(getStudentsByInstituteId(instituteId)); // Refresh list after delete
+                        dispatch(getStudentsByInstituteId(instituteId)); // Refresh list
                     }
                 })
                 .catch(() => {
@@ -74,17 +77,21 @@ const StudentsList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {instituteStudents?.map((student) => (
+                        {instituteStudents.map((student) => (
                             <tr key={student._id}>
                                 <td>{student.registrationNumber}</td>
                                 <td>
                                     <img
-                                        src={`${process.env.REACT_APP_UPLOADS_URL}/${student.profileImage}` || "assets/images/user-list/user-default.png"}
+                                        src={
+                                            student.profileImage
+                                                ? `${process.env.REACT_APP_UPLOADS_URL}/${student.profileImage}`
+                                                : "assets/images/user-list/user-default.png"
+                                        }
                                         alt={student.name}
                                         width="40"
                                         height="40"
                                         className="radius-8"
-                                        loading='lazy'
+                                        loading="lazy"
                                     />
                                 </td>
                                 <td>{student.name}</td>
@@ -99,7 +106,6 @@ const StudentsList = () => {
                                     <Link to={`/student/edit/${student._id}`} className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
                                         <Icon icon="lucide:edit" />
                                     </Link>
-
                                     <button
                                         onClick={() => handleDelete(student._id)}
                                         className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
