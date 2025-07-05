@@ -71,6 +71,11 @@ const topicSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+
+      .addCase('topics/clearTopics', (state) => {
+        state.topics = [];
+      })
+
       // 🔹 Get All Topics
       .addCase(getAllTopics.pending, (state) => {
         state.loading = true;

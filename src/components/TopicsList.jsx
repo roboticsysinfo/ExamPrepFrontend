@@ -8,7 +8,7 @@ import {
 } from '../redux/slices/topicSlice';
 import { getExamsByInstituteId } from '../redux/slices/examSlice';
 import { getSubjectsByExamId } from '../redux/slices/subjectSlice';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Modal, Button } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
@@ -16,6 +16,7 @@ import 'react-quill/dist/quill.snow.css';
 
 const TopicsList = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const { topics, loading, error } = useSelector((state) => state.topics);
   const { subjects } = useSelector((state) => state.subject);
@@ -49,6 +50,14 @@ const TopicsList = () => {
     }
   }, [selectedSubjectId]);
 
+  // Reset filters when returning to the page
+  useEffect(() => {
+    setSelectedExam('');
+    setSelectedSubjectId('');
+    setSearchText('');
+    dispatch({ type: 'topics/clearTopics' }); // 👈 optional if your slice supports this
+  }, []);
+
   const handleEdit = (topic) => {
     setSelectedTopic(topic);
     setUpdatedTitle(topic.name || '');
@@ -81,7 +90,7 @@ const TopicsList = () => {
           id: selectedTopic._id,
           updatedData: {
             name: updatedTitle,
-            topicDetail: updatedDetail, // ✅ Added topicDetail
+            topicDetail: updatedDetail,
             subject: selectedSubjectId,
             instituteId: instituteId,
           },
@@ -134,10 +143,8 @@ const TopicsList = () => {
     'header',
     'bold', 'italic', 'underline', 'strike',
     'list', 'bullet',
-    'link', 'image'
+    'link', 'image',
   ];
-
-
 
   return (
     <div className="card basic-data-table">
@@ -250,7 +257,7 @@ const TopicsList = () => {
           <Modal.Title>Edit Topic</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+        <Modal.Body style={{ maxHeight: '75vh', overflowY: 'auto' }}>
           <div className="mb-3">
             <label className="form-label">Title</label>
             <input
@@ -285,14 +292,13 @@ const TopicsList = () => {
                 value={updatedDetail}
                 onChange={setUpdatedDetail}
                 theme="snow"
-                style={{ height: '150px' }} // editor height only
                 modules={quillModules}
                 formats={quillFormats}
+                style={{ height: '150px' }}
               />
             </div>
           </div>
         </Modal.Body>
-
 
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
