@@ -10,3 +10,9 @@ tbody, td, tfoot, th, thead, tr{
     align-items: center;
     padding: 5px 0;
 }
+
+.quill-editor-wrapper .ql-editor {
+  min-height: 180px;
+  max-height: 400px;
+  overflow-y: auto;
+}

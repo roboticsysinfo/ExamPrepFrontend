@@ -9,6 +9,7 @@ import { getSubjectsByInstituteId } from '../redux/slices/subjectSlice';
 
 
 const TopicsList = () => {
+
   const dispatch = useDispatch();
 
   // Getting topics & subjects from Redux store
@@ -31,6 +32,7 @@ const TopicsList = () => {
     dispatch(getSubjectsByInstituteId(instituteId));
   }, [dispatch]);
 
+
   // Open Edit Modal and prefill title and subject
   const handleEdit = (topic) => {
     setSelectedTopic(topic);
@@ -42,6 +44,7 @@ const TopicsList = () => {
     setShowModal(true);
   };
 
+
   // Close modal and clear states
   const handleClose = () => {
     setShowModal(false);
@@ -49,6 +52,7 @@ const TopicsList = () => {
     setUpdatedTitle('');
     setSelectedSubjectId('');
   };
+
 
   // Submit update with title and subject id
   const handleUpdate = async () => {
@@ -84,8 +88,6 @@ const TopicsList = () => {
 
     handleClose(); // ✅ Modal close
   };
-
-
 
 
   // Delete topic

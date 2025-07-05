@@ -80,6 +80,7 @@ export default function QuestionManager() {
 
 
   const handleEditClick = async (question) => {
+    
     setEditQuestion(question);
 
     // 1. Wait for institute exams to be loaded (if needed)
