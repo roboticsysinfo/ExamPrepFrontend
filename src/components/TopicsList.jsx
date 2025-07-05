@@ -1,109 +1,143 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllTopics, deleteTopic, updateTopic, getTopicsByInstituteId } from '../redux/slices/topicSlice';
+import {
+  getTopicsBySubjectId,
+  deleteTopic,
+  updateTopic,
+} from '../redux/slices/topicSlice';
+import { getExamsByInstituteId } from '../redux/slices/examSlice';
+import { getSubjectsByExamId } from '../redux/slices/subjectSlice';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Modal, Button } from 'react-bootstrap';
-import { getSubjectsByInstituteId } from '../redux/slices/subjectSlice';
-
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const TopicsList = () => {
-
   const dispatch = useDispatch();
 
-  // Getting topics & subjects from Redux store
   const { topics, loading, error } = useSelector((state) => state.topics);
-  const { subjects } = useSelector((state) => state.subject);  // assuming you have this slice
+  const { subjects } = useSelector((state) => state.subject);
+  const { exams } = useSelector((state) => state.exam);
   const { user } = useSelector((state) => state.auth.user);
   const instituteId = user?.instituteId;
 
-  console.log("subjects", subjects);
-
+  const [selectedExam, setSelectedExam] = useState('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState('');
+  const [searchText, setSearchText] = useState('');
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [updatedTitle, setUpdatedTitle] = useState('');
-  const [selectedSubjectId, setSelectedSubjectId] = useState('');
+  const [updatedDetail, setUpdatedDetail] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-
-  // Fetch Topics on mount
   useEffect(() => {
-    dispatch(getTopicsByInstituteId(instituteId));
-    dispatch(getSubjectsByInstituteId(instituteId));
-  }, [dispatch]);
+    if (instituteId) {
+      dispatch(getExamsByInstituteId(instituteId));
+    }
+  }, [instituteId]);
 
+  useEffect(() => {
+    if (selectedExam) {
+      dispatch(getSubjectsByExamId(selectedExam));
+    }
+  }, [selectedExam]);
 
-  // Open Edit Modal and prefill title and subject
+  useEffect(() => {
+    if (selectedSubjectId) {
+      dispatch(getTopicsBySubjectId(selectedSubjectId));
+    }
+  }, [selectedSubjectId]);
+
   const handleEdit = (topic) => {
     setSelectedTopic(topic);
-    setUpdatedTitle(topic.name || topic.title || '');
-
-    // Preselect the subject id if available
+    setUpdatedTitle(topic.name || '');
+    setUpdatedDetail(topic.topicDetail || '');
     setSelectedSubjectId(topic.subject?._id || '');
-
     setShowModal(true);
   };
 
-
-  // Close modal and clear states
   const handleClose = () => {
     setShowModal(false);
     setSelectedTopic(null);
     setUpdatedTitle('');
+    setUpdatedDetail('');
     setSelectedSubjectId('');
   };
 
-
-  // Submit update with title and subject id
   const handleUpdate = async () => {
     if (!updatedTitle.trim()) {
       alert('Title cannot be empty!');
       return;
     }
-
     if (!selectedSubjectId) {
       alert('Please select a subject!');
       return;
     }
 
     try {
-      const result = await dispatch(updateTopic({
-        id: selectedTopic._id,
-        updatedData: {
-          name: updatedTitle,
-          subject: selectedSubjectId,
-          instituteId: instituteId
-        }
-      }));
+      const result = await dispatch(
+        updateTopic({
+          id: selectedTopic._id,
+          updatedData: {
+            name: updatedTitle,
+            topicDetail: updatedDetail, // ✅ Added topicDetail
+            subject: selectedSubjectId,
+            instituteId: instituteId,
+          },
+        })
+      );
 
       if (result.meta.requestStatus === 'fulfilled') {
-        toast.success("Topic updated successfully.");
-        dispatch(getTopicsByInstituteId(instituteId)); // ✅ Refresh topics
+        toast.success('Topic updated successfully.');
+        dispatch(getTopicsBySubjectId(selectedSubjectId));
       } else {
-        toast.error("Failed to update topic.");
+        toast.error('Failed to update topic.');
       }
-    } catch (error) {
-      toast.error("Something went wrong.");
+    } catch {
+      toast.error('Something went wrong.');
     }
 
-    handleClose(); // ✅ Modal close
+    handleClose();
   };
 
-
-  // Delete topic
   const handleDelete = (id) => {
     const confirmed = window.confirm('Are you sure you want to delete this topic?');
     if (confirmed) {
       dispatch(deleteTopic(id))
         .unwrap()
         .then(() => {
-          toast.success("Topic deleted successfully.");
+          toast.success('Topic deleted successfully.');
+          dispatch(getTopicsBySubjectId(selectedSubjectId));
         })
         .catch(() => {
-          toast.error("Failed to delete topic. Please try again.");
+          toast.error('Failed to delete topic. Please try again.');
         });
     }
   };
+
+  const filteredTopics = topics.filter((topic) =>
+    topic.name?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link', 'image'],
+      ['clean'],
+    ],
+  };
+
+  const quillFormats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet',
+    'link', 'image'
+  ];
+
+
 
   return (
     <div className="card basic-data-table">
@@ -113,13 +147,66 @@ const TopicsList = () => {
           Create Topic
         </Link>
       </div>
+
       <div className="card-body">
+        <div className="row mb-40">
+          <div className="col-md-4">
+            <label>Exam</label>
+            <select
+              className="form-select"
+              value={selectedExam}
+              onChange={(e) => {
+                setSelectedExam(e.target.value);
+                setSelectedSubjectId('');
+              }}
+            >
+              <option value="">Select Exam</option>
+              {exams?.map((exam) => (
+                <option key={exam._id} value={exam._id}>
+                  {exam.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-md-4">
+            <label>Subject</label>
+            <select
+              className="form-select"
+              value={selectedSubjectId}
+              onChange={(e) => setSelectedSubjectId(e.target.value)}
+              disabled={!selectedExam}
+            >
+              <option value="">Select Subject</option>
+              {subjects?.map((subj) => (
+                <option key={subj._id} value={subj._id}>
+                  {subj.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-md-4">
+            <label>Search Topic</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by topic name..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              disabled={!topics.length}
+            />
+          </div>
+        </div>
+
+        <hr />
+
         {loading && <p>Loading...</p>}
         {error && <p className="text-danger">{error}</p>}
-        {!loading && !topics.length && <p>No topics found.</p>}
+        {!loading && !filteredTopics.length && <p>No topics found.</p>}
 
-        {!loading && topics.length > 0 && (
-          <table className="table bordered-table mb-0">
+        {!loading && filteredTopics.length > 0 && (
+          <table className="table bordered-table mt-20 mb-0">
             <thead>
               <tr>
                 <th>S.L</th>
@@ -129,7 +216,7 @@ const TopicsList = () => {
               </tr>
             </thead>
             <tbody>
-              {topics.map((topic, index) => (
+              {filteredTopics.map((topic, index) => (
                 <tr key={topic._id}>
                   <td>{index + 1}</td>
                   <td>{topic.name}</td>
@@ -157,12 +244,13 @@ const TopicsList = () => {
         )}
       </div>
 
-      {/* React Bootstrap Modal */}
-      <Modal show={showModal} onHide={handleClose} centered>
+      {/* Modal */}
+      <Modal show={showModal} onHide={handleClose} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Edit Topic</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+
+        <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
           <div className="mb-3">
             <label className="form-label">Title</label>
             <input
@@ -174,7 +262,7 @@ const TopicsList = () => {
             />
           </div>
 
-          <div>
+          <div className="mb-3">
             <label className="form-label">Subject</label>
             <select
               className="form-select"
@@ -182,14 +270,30 @@ const TopicsList = () => {
               onChange={(e) => setSelectedSubjectId(e.target.value)}
             >
               <option value="">Select Subject</option>
-              {subjects && subjects.map((subj) => (
+              {subjects?.map((subj) => (
                 <option key={subj._id} value={subj._id}>
                   {subj.name}
                 </option>
               ))}
             </select>
           </div>
+
+          <div className="mb-3">
+            <label className="form-label">Topic Detail</label>
+            <div style={{ height: '200px', overflowY: 'auto' }}>
+              <ReactQuill
+                value={updatedDetail}
+                onChange={setUpdatedDetail}
+                theme="snow"
+                style={{ height: '150px' }} // editor height only
+                modules={quillModules}
+                formats={quillFormats}
+              />
+            </div>
+          </div>
         </Modal.Body>
+
+
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close

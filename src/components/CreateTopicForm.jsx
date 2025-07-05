@@ -66,6 +66,23 @@ const CreateTopicForm = () => {
     }
   };
 
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link', 'image'],
+      ['clean'],
+    ],
+  };
+
+  const quillFormats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet',
+    'link', 'image'
+  ];
+
   return (
     <Card className="mt-4 shadow-sm">
       <Card.Body>
@@ -113,6 +130,8 @@ const CreateTopicForm = () => {
                 style={{
                   minHeight: '200px'
                 }}
+                modules={quillModules}
+                formats={quillFormats}
               />
             </div>
           </Form.Group>

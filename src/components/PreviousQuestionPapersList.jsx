@@ -174,7 +174,7 @@ const PreviousQuestionPapersList = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="3" className="text-center">No question papers found.</td>
+                                        <td colSpan="5" className="text-center">No question papers found.</td>
                                     </tr>
                                 )}
                             </tbody>
