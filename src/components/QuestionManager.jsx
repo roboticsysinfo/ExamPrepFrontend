@@ -80,7 +80,7 @@ export default function QuestionManager() {
 
 
   const handleEditClick = async (question) => {
-    
+
     setEditQuestion(question);
 
     // 1. Wait for institute exams to be loaded (if needed)
@@ -216,6 +216,7 @@ export default function QuestionManager() {
 
           {/* Topic */}
           <div className="col-md-4">
+
             <label className="form-label">Select Topic</label>
             <select
               className="form-select"
@@ -224,11 +225,16 @@ export default function QuestionManager() {
               disabled={!selectedSubject}
             >
               <option value="">Choose Topic</option>
-              {topics?.filter(t => t.subject._id === selectedSubject).map((t) => (
-                <option key={t._id} value={t._id}>{t.name}</option>
-              ))}
+              {topics
+                ?.filter(t => t.subject && t.subject._id === selectedSubject)
+                .map((t) => (
+                  <option key={t._id} value={t._id}>{t.name}</option>
+                ))}
+
             </select>
+
           </div>
+
         </div>
 
         {loading && <div className="text-center"><Spinner animation="border" /></div>}
@@ -292,9 +298,12 @@ export default function QuestionManager() {
               <Form.Label>Topic</Form.Label>
               <Form.Select name="topic" value={editForm.topic} onChange={handleEditFormChange}>
                 <option value="">Select Topic</option>
-                {topics.filter((t) => t.subject._id === editForm.subject).map((t) => (
-                  <option key={t._id} value={t._id}>{t.name}</option>
-                ))}
+                {topics
+                  ?.filter(t => t.subject && t.subject._id === selectedSubject)
+                  .map((t) => (
+                    <option key={t._id} value={t._id}>{t.name}</option>
+                  ))}
+
               </Form.Select>
             </Form.Group>
 
