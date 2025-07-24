@@ -131,7 +131,12 @@ const TestsList = () => {
                                     <td>{test.title}</td>
                                     <td>{test.exam?.name || '-'}</td>
                                     <td>{test.subject?.name || '-'}</td>
-                                    <td>{test.topic?.name || '-'}</td>
+                                    <td>
+                                        {Array.isArray(test.topic)
+                                            ? test.topic.map((t) => t.name).join(', ')
+                                            : test.topic?.name || '-'}
+                                    </td>
+
                                     <td>{test.duration || '-'}</td>
                                     <td>{test.totalMarks || '-'}</td>
                                     <td>

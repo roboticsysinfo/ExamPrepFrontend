@@ -110,13 +110,20 @@ export const getQuestionsByInstituteId = createAsyncThunk(
     }
 );
 
+
+// 🔷 Fetch with Filter (supports pagination)
 export const fetchQuestionsByFilter = createAsyncThunk(
     'questions/fetchByFilter',
-    async ({ exam, subject, topic }) => {
+    async ({ exam, subject, topic, page = 1, limit = 50 }) => {
+        const topicParam = Array.isArray(topic) ? topic.join(',') : topic;
         const res = await api.get('/questions/filter', {
-            params: { exam, subject, topic }  // difficulty removed here
+            params: { exam, subject, topic: topicParam, page, limit }
         });
-        return res.data.data;
+
+        return {
+            questions: res.data.data,
+            pagination: res.data.pagination || null
+        };
     }
 );
 
@@ -128,6 +135,7 @@ const initialState = {
     selectedQuestion: null,
     loading: false,
     error: null,
+    pagination: null // ⬅️ added for tracking page info
 };
 
 const questionSlice = createSlice({
@@ -257,19 +265,36 @@ const questionSlice = createSlice({
                 state.error = action.payload;
             })
 
-            // Fetch by filter (new)
+
+            // 🔷 Fetch by filter (with pagination)
             .addCase(fetchQuestionsByFilter.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
+
             .addCase(fetchQuestionsByFilter.fulfilled, (state, action) => {
                 state.loading = false;
-                state.questions = action.payload;
+
+                const newQuestions = action.payload.questions;
+                const existingIds = new Set(state.questions.map(q => q._id));
+
+                const filteredNew = newQuestions.filter(q => !existingIds.has(q._id));
+
+                if (state.pagination?.page && action.payload.pagination?.page > 1) {
+                    state.questions = [...state.questions, ...filteredNew];
+                } else {
+                    state.questions = filteredNew;
+                }
+
+                state.pagination = action.payload.pagination;
             })
+
+
             .addCase(fetchQuestionsByFilter.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             })
+
 
     }
 });

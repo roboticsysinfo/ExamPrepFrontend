@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Form, Button, Container, Row, Col, Spinner } from 'react-bootstrap';
+import { Form, Button, Row, Col, Spinner } from 'react-bootstrap';
 
 import {
     getExamsByInstituteId,
@@ -17,14 +17,13 @@ import {
 } from '../redux/slices/questionSlice';
 import { createTest, clearTestState } from '../redux/slices/testSlice';
 
-const CreateTestForm = () => {
-    
+const CreateMockTestForm = () => {
     const dispatch = useDispatch();
 
     const { exams } = useSelector((state) => state.exam);
     const { subjects } = useSelector((state) => state.subject);
     const { topics } = useSelector((state) => state.topics);
-    const { questions } = useSelector((state) => state.questions);
+    const { questions, pagination } = useSelector((state) => state.questions);
     const { user } = useSelector((state) => state.auth.user);
     const { loading, error, successMessage } = useSelector((state) => state.test);
 
@@ -34,7 +33,7 @@ const CreateTestForm = () => {
         title: '',
         exam: '',
         subject: '',
-        topic: '',
+        topic: [],
         duration: 30,
         totalMarks: 0,
         questions: [],
@@ -43,37 +42,32 @@ const CreateTestForm = () => {
         instituteId: '',
     });
 
-    // Fetch exams on load
+    const [page, setPage] = useState(1);
+
     useEffect(() => {
-        setFormData(prev => ({ ...prev, instituteId }));
-        if (instituteId) {
-            dispatch(getExamsByInstituteId(instituteId));
-        }
+        setFormData((prev) => ({ ...prev, instituteId }));
+        if (instituteId) dispatch(getExamsByInstituteId(instituteId));
     }, [dispatch, instituteId]);
 
     useEffect(() => {
-        if (formData.exam) {
-            dispatch(getSubjectsByExamId(formData.exam));
-        }
+        if (formData.exam) dispatch(getSubjectsByExamId(formData.exam));
     }, [formData.exam, dispatch]);
 
     useEffect(() => {
-        if (formData.subject) {
-            dispatch(getTopicsBySubjectId(formData.subject));
-        }
+        if (formData.subject) dispatch(getTopicsBySubjectId(formData.subject));
     }, [formData.subject, dispatch]);
 
-    // Fetch questions when filter changes
     useEffect(() => {
-        if (formData.exam && formData.subject && formData.topic) {
+        if (formData.exam && formData.subject && formData.topic.length > 0) {
             dispatch(fetchQuestionsByFilter({
                 exam: formData.exam,
                 subject: formData.subject,
-                topic: formData.topic
+                topic: formData.topic,
+                page,
+                limit: 50,
             }));
         }
-    }, [formData.exam, formData.subject, formData.topic, dispatch]);
-
+    }, [formData.exam, formData.subject, formData.topic, page, dispatch]);
 
     useEffect(() => {
         if (successMessage) {
@@ -83,8 +77,7 @@ const CreateTestForm = () => {
                 title: '',
                 exam: '',
                 subject: '',
-                topic: '',
-                // difficulty removed
+                topic: [],
                 duration: 30,
                 totalMarks: 0,
                 questions: [],
@@ -99,68 +92,57 @@ const CreateTestForm = () => {
         }
     }, [successMessage, error, dispatch, instituteId]);
 
+    const handleTopicChange = (e) => {
+        const { value, checked } = e.target;
+        setFormData((prev) => {
+            const updated = checked
+                ? [...prev.topic, value]
+                : prev.topic.filter((id) => id !== value);
+            return { ...prev, topic: updated, questions: [], totalMarks: 0 };
+        });
+        setPage(1);
+    };
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-
-        if (['exam', 'subject', 'topic'].includes(name)) {
-            setFormData(prev => ({
+        if (['exam', 'subject'].includes(name)) {
+            setFormData((prev) => ({
                 ...prev,
                 [name]: value,
+                topic: [],
                 questions: [],
                 totalMarks: 0,
             }));
+            setPage(1);
         } else if (type === 'checkbox') {
-            setFormData(prev => ({
-                ...prev,
-                [name]: checked,
-            }));
+            setFormData((prev) => ({ ...prev, [name]: checked }));
         } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value,
-            }));
+            setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
     const handleQuestionToggle = (id) => {
-        setFormData(prev => {
-            let updatedQuestions;
-            if (prev.questions.includes(id)) {
-                updatedQuestions = prev.questions.filter(q => q !== id);
-            } else {
-                updatedQuestions = [...prev.questions, id];
-            }
-
-            return {
-                ...prev,
-                questions: updatedQuestions,
-                totalMarks: updatedQuestions.length,
-            };
+        setFormData((prev) => {
+            const updatedQuestions = prev.questions.includes(id)
+                ? prev.questions.filter((q) => q !== id)
+                : [...prev.questions, id];
+            return { ...prev, questions: updatedQuestions, totalMarks: updatedQuestions.length };
         });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (!formData.exam || !formData.subject || !formData.topic) {
-            return toast.error('Exam, Subject, and Topic are required!');
-        }
-
-        if (formData.questions.length === 0) {
-            return toast.error('Please select at least one question!');
-        }
-
-        if (formData.isPaid && (!formData.price || formData.price <= 0)) {
-            return toast.error('Price is required for paid tests!');
-        }
-
+        const { exam, subject, topic, questions, isPaid, price } = formData;
+        if (!exam || !subject || topic.length === 0) return toast.error('Please fill all fields.');
+        if (questions.length === 0) return toast.error('Select at least one question.');
+        if (isPaid && (!price || price <= 0)) return toast.error('Enter valid price for paid test.');
         dispatch(createTest(formData));
     };
 
     return (
         <div className="card mt-5 p-5">
             <div className='card-header d-flex align-items-center justify-content-between'>
-                <h4>Create New Test</h4>
+                <h4>Create New Mock Test</h4>
             </div>
 
             <div className='card-body'>
@@ -201,20 +183,24 @@ const CreateTestForm = () => {
                         </Col>
                         <Col md={4}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Topic</Form.Label>
-                                <Form.Select name="topic" value={formData.topic} onChange={handleChange} required>
-                                    <option value="">Select Topic</option>
+                                <Form.Label>Topics</Form.Label>
+                                <div style={{ border: '1px solid #ccc', padding: '10px', maxHeight: '150px', overflowY: 'auto' }}>
                                     {topics?.map((topic) => (
-                                        <option key={topic._id} value={topic._id}>{topic.name}</option>
+                                        <Form.Check
+                                            key={topic._id}
+                                            type="checkbox"
+                                            label={topic.name}
+                                            value={topic._id}
+                                            checked={formData.topic.includes(topic._id)}
+                                            onChange={handleTopicChange}
+                                        />
                                     ))}
-                                </Form.Select>
+                                </div>
                             </Form.Group>
                         </Col>
                     </Row>
 
                     <Row>
-                        {/* Difficulty field removed */}
-
                         <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Duration (minutes)</Form.Label>
@@ -269,26 +255,55 @@ const CreateTestForm = () => {
 
                     <Form.Group className="mb-3">
                         <Form.Label>Select Questions</Form.Label>
-                        {questions?.length === 0 ? (
-                            <p>No questions found for selected exam, subject, and topic.</p>
+                        {questions.length === 0 ? (
+                            <p>No questions found for selected filters.</p>
                         ) : (
                             <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
-                                {questions.map((q) => (
-                                    <Form.Check
-                                        key={q._id}
-                                        type="checkbox"
-                                        id={`q-${q._id}`}
-                                        label={q.question || q.questionText || q.text || 'Question text missing'}
-                                        checked={formData.questions.includes(q._id)}
-                                        onChange={() => handleQuestionToggle(q._id)}
-                                    />
-                                ))}
+                                <table className="table table-bordered table-sm">
+                                    <thead className="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Select</th>
+                                            <th>Question</th>
+                                            <th>Topic</th>
+                                            <th>Difficulty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {questions.map((q, i) => (
+                                            <tr key={q._id}>
+                                                <td>{i + 1}</td>
+                                                <td>
+                                                    <Form.Check
+                                                        type="checkbox"
+                                                        checked={formData.questions.includes(q._id)}
+                                                        onChange={() => handleQuestionToggle(q._id)}
+                                                    />
+                                                </td>
+                                                <td>{q.questionText || 'No text'}</td>
+                                                <td>{q.topic?.name || '-'}</td>
+                                                <td>{q.difficulty || '-'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+
+                        {pagination && pagination.page < pagination.totalPages && (
+                            <div className="text-center mt-3">
+                                <Button
+                                    variant="outline-primary"
+                                    onClick={() => setPage((prev) => prev + 1)}
+                                >
+                                    Load More
+                                </Button>
                             </div>
                         )}
                     </Form.Group>
 
                     <Button variant="primary" type="submit" disabled={loading}>
-                        {loading ? <Spinner animation="border" size="sm" /> : 'Create Test'}
+                        {loading ? <Spinner animation="border" size="sm" /> : 'Create Mock Test'}
                     </Button>
                 </Form>
             </div>
@@ -296,4 +311,4 @@ const CreateTestForm = () => {
     );
 };
 
-export default CreateTestForm;
+export default CreateMockTestForm;

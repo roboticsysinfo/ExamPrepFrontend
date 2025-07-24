@@ -20,9 +20,11 @@ const PracticeTestForm = () => {
     const { exams } = useSelector((state) => state.exam);
     const { subjects } = useSelector((state) => state.subject);
     const { topics } = useSelector((state) => state.topics);
-    const { questions } = useSelector((state) => state.questions);
+    const { questions, pagination } = useSelector((state) => state.questions);
     const { user } = useSelector((state) => state.auth.user);
     const { loading, error, successMessage } = useSelector((state) => state.practiceTests);
+    const [page, setPage] = useState(1);
+
 
     const instituteId = user?.instituteId;
 
@@ -61,16 +63,22 @@ const PracticeTestForm = () => {
         }
     }, [formData.subject, dispatch]);
 
+
     // Fetch questions when exam, subject, and topic change
     useEffect(() => {
-        if (formData.exam && formData.subject && formData.topic) {
+        if (formData.exam && formData.subject && formData.topic?.length) {
             dispatch(fetchQuestionsByFilter({
                 exam: formData.exam,
                 subject: formData.subject,
                 topic: formData.topic,
+                page,
+                limit: 50
             }));
         }
-    }, [formData.exam, formData.subject, formData.topic, dispatch]);
+    }, [formData.exam, formData.subject, formData.topic, page, dispatch]);
+
+
+
 
     // Handle success/error toast & reset form
     useEffect(() => {
@@ -219,22 +227,42 @@ const PracticeTestForm = () => {
                         </Col>
 
                         <Col md={4}>
+
                             <Form.Group className="mb-3" controlId="topic">
-                                <Form.Label>Topic</Form.Label>
-                                <Form.Select
-                                    name="topic"
-                                    value={formData.topic}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Select Topic</option>
+                                <Form.Label>Select Topics</Form.Label>
+                                <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
                                     {topics?.map((topic) => (
-                                        <option key={topic._id} value={topic._id}>
-                                            {topic.name}
-                                        </option>
+                                        <Form.Check
+                                            key={topic._id}
+                                            type="checkbox"
+                                            id={`topic-${topic._id}`}
+                                            label={topic.name}
+                                            value={topic._id}
+                                            checked={formData.topic.includes(topic._id)}
+                                            onChange={(e) => {
+                                                const checked = e.target.checked;
+                                                const value = e.target.value;
+
+                                                setFormData((prev) => {
+                                                    const updatedTopics = checked
+                                                        ? [...prev.topic, value]
+                                                        : prev.topic.filter((id) => id !== value);
+
+                                                    return {
+                                                        ...prev,
+                                                        topic: updatedTopics,
+                                                        questions: [],
+                                                        totalMarks: 0,
+                                                    };
+                                                });
+
+                                                setPage(1); // Reset pagination on topic change
+                                            }}
+                                        />
                                     ))}
-                                </Form.Select>
+                                </div>
                             </Form.Group>
+
                         </Col>
                     </Row>
 
@@ -280,23 +308,57 @@ const PracticeTestForm = () => {
 
                     <div className="mb-3">
                         <h5>Questions Selected: {formData.questions.length}</h5>
-                        <h5 style={{fontSize: 16}}>Total Marks: {formData.totalMarks}</h5>
+                        <h5 style={{ fontSize: 16 }}>Total Marks: {formData.totalMarks}</h5>
                         {loading && <Spinner animation="border" size="sm" />}
                         {questions.length === 0 && !loading && (
                             <p>No questions available for the selected filters.</p>
                         )}
-                        <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
-                            {questions.map((q) => (
-                                <Form.Check
-                                    key={q._id}
-                                    type="checkbox"
-                                    id={`q-${q._id}`}
-                                    label={`${q.question || q.questionText || q.text || 'Question text missing'} (Marks: ${q.marks || 0})`}
-                                    checked={formData.questions.includes(q._id)}
-                                    onChange={() => handleQuestionToggle(q._id)}
-                                />
-                            ))}
+
+                        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                            <table className="table table-bordered table-striped table-sm">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Select</th>
+                                        <th>Question</th>
+                                        <th>Topic</th>
+                                        <th>Difficulty</th>
+                                        <th>Marks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {questions.map((q, index) => (
+                                        <tr key={q._id}>
+                                            <td>{index + 1}</td>
+                                            <td>
+                                                <Form.Check
+                                                    type="checkbox"
+                                                    id={`q-${q._id}`}
+                                                    checked={formData.questions.includes(q._id)}
+                                                    onChange={() => handleQuestionToggle(q._id)}
+                                                />
+                                            </td>
+                                            <td>{q.question || q.questionText || q.text || <i>No text</i>}</td>
+                                            <td>{q.topic?.name || '-'}</td>
+                                            <td>{q.difficulty || '-'}</td>
+                                            <td>{q.marks || 0}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
+
+
+
+                        {pagination && pagination.page < pagination.totalPages && (
+                            <div className="text-center mt-3">
+                                <Button variant="outline-primary" onClick={() => setPage(page + 1)}>
+                                    Load More Questions →
+                                </Button>
+                            </div>
+                        )}
+
+
                     </div>
 
                     <Button type="submit" variant="success" disabled={loading}>

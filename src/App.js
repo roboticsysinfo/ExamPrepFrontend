@@ -25,7 +25,7 @@ import CreateSubjectPage from "./pages/CreateSubjectPage";
 import SubjectsPage from "./pages/SubjectsPage";
 import CreateTopicPage from "./pages/CreateTopicPage";
 import TopicsPage from "./pages/TopicsPage";
-import AccessDeniedPage from "./pages/AccessDeniedPage"; // create this page
+import AccessDeniedPage from "./pages/AccessDeniedPage";
 import CreateQuestionPage from "./pages/CreateQuestionPage";
 import QuestionManager from "./components/QuestionManager";
 import QuestionsPage from "./pages/QuestionsPage";

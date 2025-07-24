@@ -23,15 +23,19 @@ import { toast } from 'react-toastify';
 
 
 export default function QuestionManager() {
+
   const dispatch = useDispatch();
 
-  const { questions, loading, error } = useSelector((state) => state.questions);
+  const { questions, loading, error, pagination } = useSelector((state) => state.questions);
   const { exams } = useSelector((state) => state.exam);
   const { subjects } = useSelector((state) => state.subject);
   const { topics } = useSelector((state) => state.topics);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(50); // You can make it selectable if needed
+
 
   const { user } = useSelector((state) => state.auth.user);
-  const instituteId = user?.instituteId
+  const instituteId = user?.instituteId;
 
   const [selectedExam, setSelectedExam] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
@@ -68,15 +72,24 @@ export default function QuestionManager() {
     setSelectedTopic('');
   }, [selectedSubject]);
 
+
   useEffect(() => {
     if (selectedExam && selectedSubject && selectedTopic) {
       dispatch(fetchQuestionsByFilter({
         exam: selectedExam,
         subject: selectedSubject,
         topic: selectedTopic,
+        page: currentPage,
+        limit,
       }));
     }
-  }, [selectedExam, selectedSubject, selectedTopic, dispatch]);
+  }, [selectedExam, selectedSubject, selectedTopic, currentPage, dispatch]);
+
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedExam, selectedSubject, selectedTopic]);
+
 
 
   const handleEditClick = async (question) => {
@@ -161,10 +174,12 @@ export default function QuestionManager() {
     });
   };
 
-
   const handleDelete = (id) => {
+
     const confirmed = window.confirm('Are you sure you want to delete this question?');
+
     if (confirmed) {
+
       dispatch(deleteQuestion(id))
         .unwrap()
         .then(() => {
@@ -178,7 +193,9 @@ export default function QuestionManager() {
 
 
   return (
+
     <div className="card mt-4">
+
       <div className="card-header d-flex justify-content-between align-items-center">
         <h4>Manage Questions</h4>
         <Link to="/create-question" className="btn btn-primary">Create Questions</Link>
@@ -265,7 +282,42 @@ export default function QuestionManager() {
               ))}
             </tbody>
           </table>
+
         )}
+
+
+        {pagination && (
+          <div className="text-center mt-4">
+            <p>
+              Page {pagination.page} of {pagination.totalPages} — Total Questions: {pagination.totalCount}
+            </p>
+
+            <div className="d-flex justify-content-center gap-2">
+              {pagination.page > 1 && (
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => {
+                    setCurrentPage(pagination.page - 1);
+                  }}
+                >
+                  ← Previous
+                </button>
+              )}
+
+              {pagination.page < pagination.totalPages && (
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => {
+                    setCurrentPage(pagination.page + 1);
+                  }}
+                >
+                  Next →
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* Edit Modal */}
