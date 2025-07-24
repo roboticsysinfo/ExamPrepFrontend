@@ -17,7 +17,7 @@ const AdmissionQuery = () => {
   const dispatch = useDispatch();
 
   // ✅ Fixed this line
-  const user = useSelector((state) => state.auth.user);
+  const { user } = useSelector((state) => state.auth.user);
   const instituteId = user?.instituteId;
 
   const { admissionQueries, loading, successMessage, error } = useSelector(
@@ -26,9 +26,13 @@ const AdmissionQuery = () => {
 
   useEffect(() => {
     if (instituteId) {
+      console.log("Fetching queries for instituteId:", instituteId);
       dispatch(fetchQueriesByInstituteId(instituteId));
+    } else {
+      console.warn("No instituteId found!");
     }
-  }, [dispatch, instituteId]);
+  }, [instituteId]);
+
 
   useEffect(() => {
     if (admissionQueries.length > 0) {

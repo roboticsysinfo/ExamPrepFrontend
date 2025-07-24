@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../utils/axios'; 
+import api from '../../utils/axios';
 
 
 // 🎯 1. Send Admission Query (public use)
@@ -21,6 +21,7 @@ export const fetchAdmissionQueries = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get('/get-admission-query');
+
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch queries');
@@ -33,7 +34,9 @@ export const fetchQueriesByInstituteId = createAsyncThunk(
   'admissionQuery/fetchQueriesByInstituteId',
   async (instituteId, { rejectWithValue }) => {
     try {
+
       const res = await api.get(`/getAdmissionQueriesByInstituteId/${instituteId}`);
+
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch institute queries');
