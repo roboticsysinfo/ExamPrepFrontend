@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import $ from 'jquery';
-import 'datatables.net-dt/js/dataTables.dataTables.js';
 import { Icon } from '@iconify/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -16,7 +14,6 @@ import api from '../utils/axios';
 const AdmissionQuery = () => {
   const dispatch = useDispatch();
 
-  // ✅ Fixed this line
   const { user } = useSelector((state) => state.auth.user);
   const instituteId = user?.instituteId;
 
@@ -26,27 +23,12 @@ const AdmissionQuery = () => {
 
   useEffect(() => {
     if (instituteId) {
-      console.log("Fetching queries for instituteId:", instituteId);
+      console.log('Fetching queries for instituteId:', instituteId);
       dispatch(fetchQueriesByInstituteId(instituteId));
     } else {
-      console.warn("No instituteId found!");
+      console.warn('No instituteId found!');
     }
-  }, [instituteId]);
-
-
-  useEffect(() => {
-    if (admissionQueries.length > 0) {
-      if ($.fn.DataTable.isDataTable('#dataTable')) {
-        $('#dataTable').DataTable().destroy();
-      }
-      setTimeout(() => {
-        $('#dataTable').DataTable({
-          pageLength: 10,
-          order: [[13, 'desc']],
-        });
-      }, 0);
-    }
-  }, [admissionQueries]);
+  }, [dispatch, instituteId]);
 
   useEffect(() => {
     if (successMessage) {
@@ -69,7 +51,7 @@ const AdmissionQuery = () => {
         'village', 'dob', 'gender'
       ];
 
-      fields.forEach(field => {
+      fields.forEach((field) => {
         formData.append(field, query[field] || '');
       });
 
@@ -92,87 +74,86 @@ const AdmissionQuery = () => {
   };
 
   return (
-    <>
-      <div className="card basic-data-table">
-        <div className="card-header">
-          <h5 className="card-title mb-0">Admission Queries</h5>
-        </div>
-        <div className="card-body">
-          <div className="table-responsive">
-            <table className="table bordered-table mb-0" id="dataTable">
-              <thead>
-                <tr>
-                  <th>S.No</th>
-                  <th>Photo</th>
-                  <th>Name</th>
-                  <th>Father's Name</th>
-                  <th>Mother's Name</th>
-                  <th>Phone</th>
-                  <th>Date of Birth</th>
-                  <th>Gender</th>
-                  <th>Email</th>
-                  <th>State</th>
-                  <th>City</th>
-                  <th>Village</th>
-                  <th>Address</th>
-                  <th>Query Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!loading && admissionQueries.length > 0 ? (
-                  admissionQueries.map((query, index) => (
-                    <tr key={query._id}>
-                      <td>{index + 1}</td>
-                      <td>
-                        <img
-                          src={query.profileImage || "https://placehold.jp/60x60.png"}
-                          alt={query.name}
-                          width={60}
-                          height={60}
-                        />
-                      </td>
-                      <td>{query.name}</td>
-                      <td>{query.fatherName}</td>
-                      <td>{query.motherName}</td>
-                      <td>{query.phoneNumber}</td>
-                      <td>{query.dob}</td>
-                      <td>{query.gender}</td>
-                      <td>{query.email}</td>
-                      <td>{query.state}</td>
-                      <td>{query.city}</td>
-                      <td>{query.village}</td>
-                      <td>{query.address}</td>
-                      <td>{new Date(query.createdAt).toLocaleDateString()}</td>
-                      <td>
-                        <button
-                          className="btn btn-sm btn-info me-1"
-                          onClick={() => handleAddmissionQuery(query)}
-                        >
-                          Register
-                        </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleDelete(query._id)}
-                        >
-                          <Icon icon="mingcute:delete-2-line" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="15" className="text-center">
-                      {loading ? 'Loading...' : 'No admission queries found'}
+    <div className="card">
+      <div className="card-header">
+        <h5 className="card-title mb-0">Admission Queries</h5>
+      </div>
+      <div className="card-body">
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped">
+            <thead className="table-dark">
+              <tr>
+                <th>S.No</th>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Father's Name</th>
+                <th>Mother's Name</th>
+                <th>Phone</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>State</th>
+                <th>City</th>
+                <th>Village</th>
+                <th>Address</th>
+                <th>Query Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!loading && admissionQueries.length > 0 ? (
+                admissionQueries.map((query, index) => (
+                  <tr key={query._id}>
+                    <td>{index + 1}</td>
+                    <td>
+                      <img
+                        src={query.profileImage || 'https://placehold.jp/60x60.png'}
+                        alt={query.name}
+                        width={60}
+                        height={60}
+                        className="rounded"
+                      />
+                    </td>
+                    <td>{query.name}</td>
+                    <td>{query.fatherName}</td>
+                    <td>{query.motherName}</td>
+                    <td>{query.phoneNumber}</td>
+                    <td>{query.dob}</td>
+                    <td>{query.gender}</td>
+                    <td>{query.email}</td>
+                    <td>{query.state}</td>
+                    <td>{query.city}</td>
+                    <td>{query.village}</td>
+                    <td>{query.address}</td>
+                    <td>{new Date(query.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <button
+                        className="btn btn-sm btn-info me-1"
+                        onClick={() => handleAddmissionQuery(query)}
+                      >
+                        Register
+                      </button>
+                      <button
+                        className="btn btn-sm btn-danger"
+                        onClick={() => handleDelete(query._id)}
+                      >
+                        <Icon icon="mingcute:delete-2-line" />
+                      </button>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="15" className="text-center">
+                    {loading ? 'Loading...' : 'No admission queries found'}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
