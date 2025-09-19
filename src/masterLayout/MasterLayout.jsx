@@ -343,6 +343,16 @@ const MasterLayout = ({ children }) => {
               </NavLink>
             </li>
 
+            <li>
+              <NavLink
+                to='/manage-messages'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+
+                <span>Manage Messages</span>
+              </NavLink>
+            </li>
+
 
             {!(user.role === 'admin' || user.role === 'teacher') && (
               <li>
@@ -355,6 +365,7 @@ const MasterLayout = ({ children }) => {
                 </NavLink>
               </li>
             )}
+
 
             {!(user.role === 'admin' || user.role === 'teacher') && (
 
@@ -480,7 +491,7 @@ const MasterLayout = ({ children }) => {
                   <Link
                     to="/notification"
                     className='has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center position-relative'
-                    
+
                   >
                     <Icon
                       icon='iconoir:bell'

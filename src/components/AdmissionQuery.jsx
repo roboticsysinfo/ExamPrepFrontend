@@ -41,6 +41,7 @@ const AdmissionQuery = () => {
     }
   }, [successMessage, error, dispatch]);
 
+  
   const handleAddmissionQuery = async (query) => {
     try {
       const formData = new FormData();
@@ -75,10 +76,13 @@ const AdmissionQuery = () => {
 
   return (
     <div className="card">
+
       <div className="card-header">
         <h5 className="card-title mb-0">Admission Queries</h5>
       </div>
+
       <div className="card-body">
+
         <div className="table-responsive">
           <table className="table table-bordered table-striped">
             <thead className="table-dark">
@@ -152,7 +156,9 @@ const AdmissionQuery = () => {
             </tbody>
           </table>
         </div>
+
       </div>
+
     </div>
   );
 };

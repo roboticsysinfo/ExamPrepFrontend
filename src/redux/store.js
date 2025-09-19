@@ -14,6 +14,7 @@ import previousQuestionPaperReducer from "../redux/slices/previousQuestionPaperS
 import practiceTestsReducer from "../redux/slices/practiceTestSlice";
 import doubtReducer from "../redux/slices/doubtSlice";
 import notificationReducer from "../redux/slices/notificationSlice";
+import adminMessageReducer from "../redux/slices/adminMessageSlice"
 
 const store = configureStore({
 
@@ -34,6 +35,7 @@ const store = configureStore({
     practiceTests: practiceTestsReducer,
     doubt: doubtReducer,
     notifications: notificationReducer,
+    adminMessages: adminMessageReducer
 
   },
 

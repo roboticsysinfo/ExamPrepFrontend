@@ -45,6 +45,7 @@ import PracticeTestsListPage from "./pages/PracticeTestsListPage";
 import StudentsDoubtsPage from "./pages/StudentsDoubtsPage";
 import StudentLeaderboardPage from "./pages/StudentLeaderboardPage";
 import EditPracticeTestPage from "./pages/EditPracticeTestPage";
+import AdminMessagePage from "./pages/AdminMessagePage";
 
 function App() {
 
@@ -184,6 +185,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/create-topic"
           element={
@@ -349,6 +351,17 @@ function App() {
           }
         />
 
+
+        <Route
+          path="/manage-messages"
+          element={
+            <PrivateRoute>
+              <RoleBasedRoute allowedRoles={['admin', 'admin']} pageKey="manage-messages">
+                <AdminMessagePage />
+              </RoleBasedRoute>
+            </PrivateRoute>
+          }
+        />
 
 
         {/* Super Admin Routes */}
